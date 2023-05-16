@@ -43,6 +43,18 @@ const typeDefs = gql`
         getUserDetails(token: String!): User!
     }
 
+    input CreateTodoInput {
+        title: String!
+        message: String!
+        imageUrl: String!
+        userId: String!
+        status: Int!
+        id: ID!
+        createdAt: String!
+        updatedAt: String!
+    }
+
+
     type Mutation {
         # Post
         createPost(title: String!, content: String!, imageUrl: String!,userId:String!): String!
@@ -53,7 +65,7 @@ const typeDefs = gql`
         updateUser(userId: ID!, username: String!, email: String!, password: String!): String!
         deleteUser(userId: ID!): String!
         # Todo
-        createTodo(title: String!, message: String!, imageUrl: String!,userId:String!, status:Int!): String!
+        createTodo(input:CreateTodoInput!): String!
         updateTodo(todoId: ID!, title: String!, message: String!, imageUrl: String!, status:Int!): String!
         deleteTodo(todoId: ID!): String!
     }`;

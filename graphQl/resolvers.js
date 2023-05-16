@@ -25,8 +25,8 @@ const resolvers = {
       return await remove({ postId })
     },
     // todo
-    createTodo: async (_, { title, message, imageUrl, userId, status }) => {
-      return await createTodo({ title, message, imageUrl, userId, status })
+    createTodo: async (_, {input}) => {
+      return await createTodo({input})
     },
     updateTodo: async (_, { todoId, title, message, imageUrl, status }) => {
       return await updateTodo({ todoId, title, message, imageUrl, status })

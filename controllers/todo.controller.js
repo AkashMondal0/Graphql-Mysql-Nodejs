@@ -9,15 +9,16 @@ const getUserTodos = async () => {
 }
 
 // create todo function
-const createTodo = async ({ title, message, imageUrl, userId, status }) => {
-    const id = uniqid()
-    const sql = `INSERT INTO Todos (id,title,message,imageUrl,userId,status,createdAt,updatedAt) VALUES ('${id}','${title}','${message}','${imageUrl}','${userId}','${status}','${updatedAt}','${updatedAt}')`
+const createTodo = async ({ input }) => {
+    const { title, message, imageUrl, userId, status, id, updatedAt, createdAt } = input
+    const sql = `INSERT INTO Todos (id,title,message,imageUrl,userId,status,createdAt,updatedAt) VALUES ('${id}','${title}','${message}','${imageUrl}','${userId}','${status}','${createdAt}','${updatedAt}')`
     await connect_mysql.query(sql)
     return "success create"
 }
 
 // update todo function
-const updateTodo = async ({ todoId, title, message, imageUrl, status }) => {
+const updateTodo = async ({ title, message, imageUrl, status, todoId }) => {
+    
     const sql = `UPDATE Todos SET title='${title}',message='${message}',imageUrl='${imageUrl}',imageUrl='${status}',updatedAt='${updatedAt}' WHERE id='${todoId}'`
     await connect_mysql.query(sql)
     return "success update"
