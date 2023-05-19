@@ -17,7 +17,7 @@ db.sequelize.sync().then(() => {
     console.log("Connected successfully")
   })
 }).then(() => {
-  server.listen({ port: 5000 }).then(({ url }) => {
+  server.listen({ port: 8000 }).then(({ url }) => {
     console.log(url)
   })
 }).catch(err => {
