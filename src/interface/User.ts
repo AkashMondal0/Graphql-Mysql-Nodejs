@@ -2,16 +2,14 @@ import { Post, Status } from "./Post";
 
  export interface User {
     id: string;
-    username: string;
+    name: string;
     email: string;
     password: string;
     bio: string;
     website: string;
     avatar: string;
-    token: string;
     createDate: string;
     updateDate: string;
-    lastLoginDate: string;
     posts: Post[];
     status: Status[];
     followers: User[];

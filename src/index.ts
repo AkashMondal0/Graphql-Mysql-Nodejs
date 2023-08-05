@@ -1,40 +1,19 @@
+// npm install @apollo/server express graphql cors body-parser
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import helmet from 'helmet';
-import typeDefs from './schema/typeDefs';
+import { json } from 'body-parser';
 import resolvers from './schema/resolvers';
-import connect_mysql from "./db/db.config"
-import { getUser } from './controller/User';
-
+import typeDefs from './schema/typeDefs';
+import mysqlSync from './db/sync';
 interface MyContext {
   token?: string;
 }
 
 const app = express();
-const PORT = 3000
-
-app.use(cors())
-app.use(express.json());
-app.use(helmet());
-dotenv.config();
-
-app.get('/', (req, res) => {
-  res.send("Server ready")
-});
-
-app.get('/test', (req, res) => {
-  getUser().then((data) => {
-    console.log(data)
-    res.json(data)
-  })
-});
-
 const httpServer = http.createServer(app);
 const server = new ApolloServer<MyContext>({
   typeDefs,
@@ -47,20 +26,17 @@ const main = async () => {
   app.use(
     '/graphql',
     cors<cors.CorsRequest>(),
-    bodyParser.json(),
+    json(),
     expressMiddleware(server, {
       context: async ({ req }) => ({ token: req.headers.token }),
     }),
   );
 
-  connect_mysql.getConnection().then(() => {
-    console.log("Connected to MySQL")
-    httpServer.listen(PORT, () => {
-      console.log(`🚀 Server ready at http://localhost:${PORT}/graphql`);
-    });
-  }).catch((err) => {
-    console.log(err)
-  })
+  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
+  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
 }
 
-main();
+mysqlSync().then(() => {
+  console.log("database synced");
+  main();
+});
