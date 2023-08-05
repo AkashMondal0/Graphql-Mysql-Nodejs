@@ -94,8 +94,12 @@ const typeDefs = `#graphql
     users: [User!]!
     user(uid: ID!): User!
     name(name: String!): User!
-    userByEmail(email: String!): User!
+    userByNameAndEmail(Text: String!): [User]
     userByToken(token: String!): User!
+    userLogin(
+      email: String!
+      password: String!
+    ): String
   }
 
   # mutations
@@ -111,10 +115,6 @@ const typeDefs = `#graphql
 
     follow(authorId:String!, followUserId:String!): String!
 
-    # userLogin(
-    #   email: String!
-    #   password: String!
-    # ): ReturnType 
 
     # userLogout(token: String!): User!
     # userUpdate(id: ID!, updateUserData:UpdateUserData!): ReturnType
