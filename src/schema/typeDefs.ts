@@ -86,12 +86,11 @@ const typeDefs = `#graphql
     User: User
     Post: Post
     reaction: String
-    createDate: String
-    updateDate: String
   }
 
   type Comment{
     id: ID!
+    User: User
     content: String
     createDate: String
     updateDate: String
@@ -114,6 +113,8 @@ const typeDefs = `#graphql
     posts: [Post!]!
     post(id: ID!): Post!
     postByAuthorId(authorId: String!): [Post]
+    # Like queries
+    likeByPostId(postId: String!): [Like]
   }
 
   # mutations
@@ -137,8 +138,8 @@ const typeDefs = `#graphql
       images: [String]!
       authorId: String!
     ): String!
-
-    
+    createLikeAndDisLike(postId: String!, authorId: String!): String!
+    createComment(postId: String!, authorId: String!, content: String!): String!
   }
 `;
 
