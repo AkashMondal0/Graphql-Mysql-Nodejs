@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import uuid4 from "uuid4";
 import sequelize from "../db/db";
-import { Follow, User } from "../db/model/User";
+import { User } from "../db/model/User";
 import bcrypt from "bcrypt";
 const saltRounds = 10;
 const secret = process.env.JWT_SECRET as string || "secret";
@@ -13,10 +13,10 @@ const getUsers = async () => {
     return users
 }
 
-const getUserById = async (uid: string) => {
+const getUserById = async (id: string) => {
     const user = await User.findOne({
         where: {
-            uid: uid
+            id: id
         }
     })
     return user
@@ -24,13 +24,13 @@ const getUserById = async (uid: string) => {
 
 const getUserByToken = async (token: string) => {
 
-    const verify = jwt.verify(token, secret) as { uid: string }
-    if (!verify?.uid) {
+    const verify = jwt.verify(token, secret) as { id: string }
+    if (!verify?.id) {
         return "Invalid Token"
     }
     const user = await User.findOne({
         where: {
-            uid: verify?.uid
+            id: verify?.id
         }
     })
     return user
@@ -59,9 +59,9 @@ const register = async (data: {
                 email,
                 password: hashPassword,
                 avatar,
-                uid: uuid4()
+                id: uuid4()
             })
-            const token = jwt.sign({ uid: GID }, secret)
+            const token = jwt.sign({ id: GID }, secret)
             return token
         }
     } catch (error) {
@@ -85,43 +85,10 @@ const login = async (email: string, password: string) => {
         if (!checkPassword) {
             return "Invalid User Credential"
         }
-        const token = jwt.sign({ uid: user?.dataValues.uid }, secret)
+        const token = jwt.sign({ uid: user?.dataValues.id }, secret)
         return token
     } catch (error) {
         return "Something Wrong"
-    }
-}
-
-const userFollow = async (authorId: string, followUserId: string) => {
-    try {
-
-        const [alreadyFollow] = await sequelize.query(`SELECT * FROM follows where 
-        followerId = "${authorId}" 
-        AND followingId = "${followUserId}" 
-        OR followerId = "${followUserId}" 
-        AND followingId = "${authorId}"`,
-            {
-                model: Follow,
-                mapToModel: true
-            })
-        if (alreadyFollow?.dataValues.id) {
-            await Follow.destroy({
-                where: {
-                    id: alreadyFollow?.dataValues.id
-                }
-            })
-            // console.log("unfollow")
-            return "unFollow success"
-        } else {
-            await Follow.create({
-                followerId: authorId,
-                followingId: followUserId
-            })
-            return "Follow success"
-        }
-    } catch (error) {
-        console.log(error); //TODO // type assertion to tell TypeScript that error is of type Error
-        return (error as Error).message
     }
 }
 
@@ -141,6 +108,5 @@ export {
     getUserByNameAndEmail,
     getUserByToken,
     register,
-    userFollow,
     login
 }

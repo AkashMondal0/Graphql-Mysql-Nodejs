@@ -16,11 +16,10 @@ const User = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    uid: {
+    id: {
         type: DataTypes.STRING,
         allowNull: false,
-        primaryKey: true,
-        unique: true
+        primaryKey: true
     },
     bio: {
         type: DataTypes.STRING,
@@ -37,27 +36,26 @@ const User = sequelize.define("user", {
 });
 
 const Follow = sequelize.define("follow", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     followerId: {
         type: DataTypes.STRING,
         allowNull: false,
-        // field: 'followerId',
-        // references: {
-        //     model: User,
-        //     key: 'uid'
-        // }
+        field: 'followerId',
     },
     followingId: {
         type: DataTypes.STRING,
         allowNull: false,
-        // field: 'followingId',
-        // references: {
-        //     model: User,
-        //     key: 'uid'
-        // }
+        field: 'followingId',
     },
-});
-
-export  {
+})
+// Define the foreign key relationships
+Follow.belongsTo(User, { foreignKey: 'followerId' });
+Follow.belongsTo(User, { foreignKey: 'followingId' });
+export {
     User,
     Follow
 };

@@ -3,6 +3,11 @@ import sequelize from '../db';
 import { User } from './User';
 
 const Post = sequelize.define("Post", {
+    id: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+    },
     caption: {
         type: DataTypes.STRING,
         allowNull: false
@@ -14,11 +19,6 @@ const Post = sequelize.define("Post", {
     authorId: {
         type: DataTypes.STRING,
         allowNull: false,
-        field: 'authorId',
-        references: {
-            model: User,
-            key: 'uid'
-        }
     },
 });
 
@@ -27,54 +27,36 @@ const Comment = sequelize.define("Comment", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    userId: {
+    authorId: {
         type: DataTypes.STRING,
         allowNull: false,
-        field: 'userId',
-        references: {
-            model: User,
-            key: 'uid'
-        }
     },
     postId: {
         type: DataTypes.STRING,
         allowNull: false,
-        field: 'postId',
-        references: {
-            model: Post,
-            key: 'id'
-        }
     },
 });
 
 const Like = sequelize.define("Like", {
     reaction: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    userId: {
+    authorId: {
         type: DataTypes.STRING,
-        allowNull: false,
-        field: 'userId',
-        references: {
-            model: User,
-            key: 'uid'
-        }
+        allowNull: false
     },
     postId: {
         type: DataTypes.STRING,
         allowNull: false,
-        field: 'postId',
-        references: {
-            model: Post,
-            key: 'id'
-        }
     },
 });
 
-
-
-
+Post.belongsTo(User, { foreignKey: 'authorId' });
+Like.belongsTo(User, { foreignKey: 'authorId' });
+Like.belongsTo(Post, { foreignKey: 'postId' });
+Comment.belongsTo(Post, { foreignKey: 'postId' });
+Comment.belongsTo(User, { foreignKey: 'authorId' });
 export {
     Post,
     Like,

@@ -1,7 +1,7 @@
 const typeDefs = `#graphql
 
   type User {
-    uid: ID!
+    id: ID!
     # manual update
     name: String!
     email: String!
@@ -17,6 +17,14 @@ const typeDefs = `#graphql
     requests: Request
     conversations: [Conversation]
   }
+
+  type Follow{
+    id: ID!
+    followerId: String!
+    followingId: String!
+    createAt: String
+    updateAt: String
+  } 
 
   type Conversation{
     id: ID!
@@ -92,14 +100,20 @@ const typeDefs = `#graphql
   type Query {
     # users queries
     users: [User!]!
-    user(uid: ID!): User!
+    user(id: ID!): User!
     name(name: String!): User!
     userByNameAndEmail(Text: String!): [User]
     userByToken(token: String!): User!
+    getUserFollowers(id: String!): [Follow]
+    getUserFollowing(id: String!): [Follow]
     userLogin(
       email: String!
       password: String!
     ): String
+    # post queries
+    posts: [Post!]!
+    post(id: ID!): Post!
+    postByAuthorId(authorId: String!): [Post]
   }
 
   # mutations
@@ -112,13 +126,19 @@ const typeDefs = `#graphql
       password: String!
       avatar: String
     ): String
-
     follow(authorId:String!, followUserId:String!): String!
-
-
     # userLogout(token: String!): User!
     # userUpdate(id: ID!, updateUserData:UpdateUserData!): ReturnType
     # userDelete(id: ID!): ReturnType
+
+    # post
+    postCreate(
+      caption: String!
+      images: [String]!
+      authorId: String!
+    ): String!
+
+    
   }
 `;
 
