@@ -14,11 +14,7 @@ const getUsers = async () => {
 }
 
 const getUserById = async (id: string) => {
-    const user = await User.findOne({
-        where: {
-            id: id
-        }
-    })
+    const user = await User.findOne({ where: { id: id } })
     return user
 }
 
@@ -43,11 +39,7 @@ const register = async (data: {
     name: string
 }) => {
     try {
-        const alreadyUser = await User.findOne({
-            where: {
-                email: data.email
-            }
-        })
+        const alreadyUser = await User.findOne({ where: { email: data.email } })
         if (alreadyUser?.dataValues.email) {
             return "User already exist"
         } else {
@@ -73,11 +65,7 @@ const register = async (data: {
 
 const login = async (email: string, password: string) => {
     try {
-        const user = await User.findOne({
-            where: {
-                email: email
-            }
-        })
+        const user = await User.findOne({ where: { email: email } })
         if (!user?.dataValues.email) {
             return "User Not Found"
         }
@@ -102,11 +90,29 @@ const getUserByNameAndEmail = async (Text: string) => {
     return user
 }
 
+const updateUser = async (data: { id: string, 
+    name: string,
+     email: string, 
+    password: string, 
+    bio: string,
+    website: string,
+    avatar: string }) => {
+    await User.update(data, { where: { id: data.id } })
+    return "User Updated"
+}
+
+const deleteUser = async (id: string) => {
+    await User.destroy({ where: { id: id } })
+    return "User Deleted"
+}
+
 export {
     getUsers,
     getUserById,
     getUserByNameAndEmail,
     getUserByToken,
     register,
-    login
+    login,
+    updateUser,
+    deleteUser
 }

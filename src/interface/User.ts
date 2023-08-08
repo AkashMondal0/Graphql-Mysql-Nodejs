@@ -1,6 +1,6 @@
 import { Post, Status } from "./Post";
 
- export interface User {
+export interface User {
     id: string;
     name: string;
     email: string;
@@ -8,8 +8,8 @@ import { Post, Status } from "./Post";
     bio: string;
     website: string;
     avatar: string;
-    createDate: string;
-    updateDate: string;
+    createAt: string;
+    updateAt: string;
     posts: Post[];
     status: Status[];
     followers: User[];
@@ -23,7 +23,8 @@ export interface Requests {
     id: string;
     user: User;
     type: requestsTypes;
-    createDate: string;
+    createAt: string;
+    updateAt: string;
     requestType: requestType;
 }
 
@@ -31,7 +32,8 @@ export interface Conversation {
     id: string;
     users: User[];
     messages: Message[];
-    createDate: string;
+    createAt: string;
+    updateAt: string;
     updateDate: string;
     isGroup: boolean;
     GroupData: GroupData;
@@ -53,7 +55,8 @@ export interface Message {
     text: string;
     images: string[];
     replyTo: Message;
-    createDate: string;
+    createAt: string;
+    updateAt: string;
     updateDate: string;
     user: User;
 }

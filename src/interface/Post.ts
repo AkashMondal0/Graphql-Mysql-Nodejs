@@ -3,8 +3,8 @@ import { User } from "./User";
 export interface Post {
     id: string;
     caption: string;
-    createDate: string;
-    updateDate: string;
+    createAt: string;
+    updateAt: string;
     author: User;
     likes: Like[];
     comments: Comment[];
@@ -17,15 +17,15 @@ export interface Like {
     User: User;
     Post: Post;
     reaction: Reaction;
-    createDate: string;
-    updateDate: string;
+    createAt: string;
+    updateAt: string;
 }
 
 export interface Comment {
     id: User;
     content: string;
-    createDate: string;
-    updateDate: string;
+    createAt: string;
+    updateAt: string;
 }
 
 // Status 
@@ -34,7 +34,8 @@ export interface Status {
     Status: [{
         id: string;
         image: string;
-        createDate: string;
+        createAt: string;
+        updateAt: string;
         seenUsers: User[];
         comments: Comment[];
     }];

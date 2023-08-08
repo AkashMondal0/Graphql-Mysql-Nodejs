@@ -16,6 +16,8 @@ const typeDefs = `#graphql
     following: [User]
     requests: Request
     conversations: [Conversation]
+    createAt: String
+    updateAt: String
   }
 
   type Follow{
@@ -40,16 +42,17 @@ const typeDefs = `#graphql
     admins: [User!]
     owner: User
     requests: [Request]
+    createAt: String
+    updateAt: String
   }
-
 
   type Message {
     id: ID!
     text: String
     images: [String]
     replyTo: Message
-    createDate: String
-    updateDate: String
+    createAt: String
+    updateAt: String
     user: User
   }
 
@@ -57,7 +60,8 @@ const typeDefs = `#graphql
     id: ID!
     user: User!
     type: String
-    createDate: String
+    createAt: String
+    updateAt: String
     RequestType: String
   }
 
@@ -65,7 +69,7 @@ const typeDefs = `#graphql
     id: ID!
     caption: String
     image: String
-    createDate: String
+    createAt: String
     seenUsers: [User]
     comments: [Comment]
   }
@@ -73,8 +77,8 @@ const typeDefs = `#graphql
   type Post{
     id: ID!
     caption: String
-    createDate: String
-    updateDate: String
+    createAt: String
+    updateAt: String
     author: User
     likes: [Like]
     comments: [Comment]
@@ -92,8 +96,8 @@ const typeDefs = `#graphql
     id: ID!
     User: User
     content: String
-    createDate: String
-    updateDate: String
+    createAt: String
+    updateAt: String
   }
 
   type Query {
@@ -105,10 +109,7 @@ const typeDefs = `#graphql
     userByToken(token: String!): User!
     getUserFollowers(id: String!): [Follow]
     getUserFollowing(id: String!): [Follow]
-    userLogin(
-      email: String!
-      password: String!
-    ): String
+    userLogin(email: String! password: String!): String
     # post queries
     posts: [Post!]!
     post(id: ID!): Post!
@@ -118,7 +119,6 @@ const typeDefs = `#graphql
   }
 
   # mutations
-
   type Mutation {
     # authentication
     userRegister(
@@ -128,9 +128,15 @@ const typeDefs = `#graphql
       avatar: String
     ): String
     follow(authorId:String!, followUserId:String!): String!
-    # userLogout(token: String!): User!
-    # userUpdate(id: ID!, updateUserData:UpdateUserData!): ReturnType
-    # userDelete(id: ID!): ReturnType
+    userUpdate(id: ID! 
+    name:String
+    email:String
+    password: String!
+    bio: String
+    website: String
+    avatar: String
+    ): String!
+    userDelete(id: ID!): String!
 
     # post
     postCreate(
@@ -138,9 +144,14 @@ const typeDefs = `#graphql
       images: [String]!
       authorId: String!
     ): String!
+    postUpdate(
+      id: ID!
+      caption: String
+      images: [String]
+    ): String!
+    postDelete(id: ID!): String!
     createLikeAndDisLike(postId: String!, authorId: String!): String!
     createComment(postId: String!, authorId: String!, content: String!): String!
-  }
-`;
+  }`;
 
 export default typeDefs;

@@ -67,5 +67,6 @@ const getUserFollowing = async (authorId: string) => {
 export {
     userFollowAndUnFollow,
     getUserFollowers,
-    getUserFollowing
+    getUserFollowing,
+    
 }

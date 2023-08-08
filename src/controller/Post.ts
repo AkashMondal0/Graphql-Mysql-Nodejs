@@ -24,11 +24,18 @@ const createPost = async (data: { caption: string, images: string[], authorId: s
     })
     return "Post created"
 }
-const updatePost = async () => {
-
+const updatePost = async (data: {
+    id: string, caption: string, images: string[]
+}) => {
+    await Post.update({
+        caption: data.caption,
+        images: "coming soon",
+    }, { where: { id: data.id } })
+    return "Post updated"
 }
-const deletePost = async () => {
-
+const deletePost = async (postId: string) => {
+    await Post.destroy({ where: { id: postId } })
+    return "Post deleted"
 }
 // Like 
 const createLikeAndDisLike = async (postId: string, authorId: string) => {
@@ -91,5 +98,5 @@ export {
     createComment,
     updateComment,
     deleteComment,
-    getPostComment
+    getPostComment,
 }
