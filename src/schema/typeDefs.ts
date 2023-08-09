@@ -114,8 +114,9 @@ const typeDefs = `#graphql
     posts: [Post!]!
     post(id: ID!): Post!
     postByAuthorId(authorId: String!): [Post]
-    # Like queries
     likeByPostId(postId: String!): [Like]
+    # status queries
+    status: [Status!]!
   }
 
   # mutations
@@ -152,6 +153,15 @@ const typeDefs = `#graphql
     postDelete(id: ID!): String!
     createLikeAndDisLike(postId: String!, authorId: String!): String!
     createComment(postId: String!, authorId: String!, content: String!): String!
+    # status
+    statusCreate(
+      caption: String!
+      image: String!
+      authorId: String!
+    ): String!
+    statusSeenUpdate(statusId: String!, userId: String!): String!
+    statusDelete(id: ID!): String!
+    statusCreateComment(statusId: String!, authorId: String!, content: String!): String!
   }`;
 
 export default typeDefs;

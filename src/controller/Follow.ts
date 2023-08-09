@@ -1,10 +1,8 @@
 import sequelize from "../db/db"
-import { Follow } from "../db/model/User"
-import { getUserById } from "./User"
+import { Follow, User } from "../db/model/User"
 
 const userFollowAndUnFollow = async (authorId: string, followUserId: string) => {
     try {
-
         const [alreadyFollow] = await sequelize.query(`SELECT * FROM follows where 
         followerId = "${authorId}" 
         AND followingId = "${followUserId}"`,
@@ -33,40 +31,56 @@ const userFollowAndUnFollow = async (authorId: string, followUserId: string) => 
 }
 
 const getUserFollowers = async (authorId: string) => {
-    const followerArr = []
-    const followers = await Follow.findAll({
-        where: {
-            followingId: authorId
+    try {
+        const followerArr = []
+        const followers = await Follow.findAll({
+            where: {
+                followingId: authorId
+            }
+        })
+        for (let i = 0; i < followers.length; i++) {
+            const element = followers[i];
+            const user = await User.findOne({
+                where: {
+                    id: element.dataValues.followerId
+                }
+            })
+            followerArr.push(user?.dataValues)
         }
-    })
-    for (let i = 0; i < followers.length; i++) {
-        const element = followers[i];
-        const user = await getUserById(element.dataValues.followerId)
-       
-        followerArr.push(user?.dataValues)
+        return followerArr
+    } catch (error) {
+        console.log(error);
+        return new Error("Something went wrong")
     }
-    return followerArr
 }
 
 const getUserFollowing = async (authorId: string) => {
-    const followingArr = []
-    const following = await Follow.findAll({
-        where: {
-            followerId: authorId
+    try {
+        const followingArr = []
+        const following = await Follow.findAll({
+            where: {
+                followerId: authorId
+            }
+        })
+        for (let i = 0; i < following.length; i++) {
+            const element = following[i];
+            const user = await User.findOne({
+                where: {
+                    id: element.dataValues.followingId
+                }
+            })
+            followingArr.push(user?.dataValues)
         }
-    })
-    for (let i = 0; i < following.length; i++) {
-        const element = following[i];
-        const user = await getUserById(element.dataValues.followingId)
-      
-        followingArr.push(user?.dataValues)
+        return followingArr
+    } catch (error) {
+        console.log(error);
+        return new Error("Something went wrong")
     }
-    return followingArr
 }
 
 export {
     userFollowAndUnFollow,
     getUserFollowers,
     getUserFollowing,
-    
+
 }

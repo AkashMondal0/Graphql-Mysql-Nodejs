@@ -9,27 +9,41 @@ import jwt from "jsonwebtoken";
 
 
 const getUsers = async () => {
-    const users = await User.findAll()
-    return users
+    try {
+        const users = await User.findAll()
+        return users
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
 const getUserById = async (id: string) => {
-    const user = await User.findOne({ where: { id: id } })
-    return user
+    try {
+        const user = await User.findOne({ where: { id: id } })
+        return user
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
 const getUserByToken = async (token: string) => {
-
-    const verify = jwt.verify(token, secret) as { id: string }
-    if (!verify?.id) {
-        return "Invalid Token"
-    }
-    const user = await User.findOne({
-        where: {
-            id: verify?.id
+    try {
+        const verify = jwt.verify(token, secret) as { id: string }
+        if (!verify?.id) {
+            return new Error("Invalid Token")
         }
-    })
-    return user
+        const user = await User.findOne({
+            where: {
+                id: verify?.id
+            }
+        })
+        return user
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
 const register = async (data: {
@@ -41,7 +55,7 @@ const register = async (data: {
     try {
         const alreadyUser = await User.findOne({ where: { email: data.email } })
         if (alreadyUser?.dataValues.email) {
-            return "User already exist"
+            return new Error("User already exist")
         } else {
             const { name, email, password, avatar } = data;
             const hashPassword = await bcrypt.hash(password, saltRounds);
@@ -51,14 +65,14 @@ const register = async (data: {
                 email,
                 password: hashPassword,
                 avatar,
-                id: uuid4()
+                id: GID
             })
             const token = jwt.sign({ id: GID }, secret)
             return token
         }
     } catch (error) {
-        console.log(error); //TODO // type assertion to tell TypeScript that error is of type Error
-        return (error as Error).message
+        console.log(error)
+        return new Error("Something went wrong")
     }
 }
 
@@ -67,43 +81,59 @@ const login = async (email: string, password: string) => {
     try {
         const user = await User.findOne({ where: { email: email } })
         if (!user?.dataValues.email) {
-            return "User Not Found"
+            return new Error("User does not exist")
         }
         const checkPassword = await bcrypt.compare(password, user?.dataValues.password)
         if (!checkPassword) {
-            return "Invalid User Credential"
+            return new Error("Password is incorrect")
         }
-        const token = jwt.sign({ uid: user?.dataValues.id }, secret)
+        const token = jwt.sign({ id: user?.dataValues.id }, secret)
         return token
     } catch (error) {
-        return "Something Wrong"
+        console.log(error)
+        return new Error("Something went wrong")
     }
 }
 
 
 const getUserByNameAndEmail = async (Text: string) => {
-    const user = await sequelize.query(`SELECT * FROM users WHERE email LIKE "%${Text}%" OR name LIKE "%${Text}%"`,
-        {
-            model: User,
-            mapToModel: true,
-        })
-    return user
+    try {
+        const user = await sequelize.query(`SELECT * FROM users WHERE email LIKE "%${Text}%" OR name LIKE "%${Text}%"`,
+            {
+                model: User,
+                mapToModel: true,
+            })
+        return user
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
-const updateUser = async (data: { id: string, 
+const updateUser = async (data: {
+    id: string,
     name: string,
-     email: string, 
-    password: string, 
+    email: string,
+    password: string,
     bio: string,
     website: string,
-    avatar: string }) => {
-    await User.update(data, { where: { id: data.id } })
-    return "User Updated"
+    avatar: string
+}) => {
+    try {
+        await User.update(data, { where: { id: data.id } })
+        return "User Updated"
+    } catch (error) {
+        return new Error("Something went wrong")
+    }
 }
 
 const deleteUser = async (id: string) => {
-    await User.destroy({ where: { id: id } })
-    return "User Deleted"
+    try {
+        await User.destroy({ where: { id: id } })
+        return "User Deleted"
+    } catch (error) {
+        return new Error("Something went wrong")
+    }
 }
 
 export {

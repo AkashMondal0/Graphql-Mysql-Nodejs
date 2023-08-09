@@ -22,6 +22,26 @@ const Post = sequelize.define("Post", {
     },
 });
 
+const Image = sequelize.define("Image", {
+    postId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    authorId: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    id:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        primaryKey: true
+    }
+});
+
 const Comment = sequelize.define("Comment", {
     content: {
         type: DataTypes.STRING,
@@ -44,7 +64,7 @@ const Like = sequelize.define("Like", {
     },
     authorId: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     postId: {
         type: DataTypes.STRING,
@@ -55,10 +75,14 @@ const Like = sequelize.define("Like", {
 Post.belongsTo(User, { foreignKey: 'authorId' });
 Like.belongsTo(User, { foreignKey: 'authorId' });
 Like.belongsTo(Post, { foreignKey: 'postId' });
-Comment.belongsTo(Post, { foreignKey: 'postId' });
+// Comment.belongsTo(Post, { foreignKey: 'postId' });
 Comment.belongsTo(User, { foreignKey: 'authorId' });
+Image.belongsTo(Post, { foreignKey: 'postId' });
+Image.belongsTo(User, { foreignKey: 'authorId' });
+
 export {
     Post,
     Like,
-    Comment
+    Comment,
+    Image
 };

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getUserFollowers, getUserFollowing, userFollowAndUnFollow } from "../controller/Follow";
-import { createComment, createLikeAndDisLike, createPost, deletePost, getPost, getPostComment, getPostLikes, getPosts, getUserAllPosts, updatePost } from "../controller/Post";
-import { getUserAllStatus } from "../controller/Status";
+import { createComment, createLikeAndDisLike, createPost, deletePost, getPost, getPostComment, getPostImages, getPostLikes, getPosts, getUserAllPosts, updatePost } from "../controller/Post";
+import { createUserStatus, deleteUserStatus, getStatusSeenUsers, getUserAllStatus, updateSeenStatus } from "../controller/Status";
 import { deleteUser, getUserById, getUserByNameAndEmail, getUserByToken, getUsers, login, register, updateUser } from "../controller/User";
 
 const resolvers = {
@@ -33,6 +33,11 @@ const resolvers = {
         postDelete: async (_: any, data: { id: string }) => await deletePost(data.id),
         createLikeAndDisLike: async (_: any, data: { postId: string, authorId: string }) => await createLikeAndDisLike(data.postId, data.authorId),
         createComment: async (_: any, data: { postId: string, authorId: string, content: string }) => await createComment(data.postId, data.authorId, data.content),
+        // status mutations
+        statusCreate: async (_: any, data: { caption: string, image: string, authorId: string }) => await createUserStatus(data),
+        statusSeenUpdate: async (_: any, data: { statusId: string, userId: string }) => await updateSeenStatus(data),
+        statusDelete: async (_: any, data: { id: string }) => await deleteUserStatus(data.id),
+        statusCreateComment: async (_: any, data: { statusId: string, authorId: string, content: string }) => await createComment(data.statusId, data.authorId, data.content),
     },
     // user
     User: {
@@ -46,12 +51,18 @@ const resolvers = {
         author: async (parent: any) => await getUserById(parent.authorId),
         likes: async (parent: any) => await getPostLikes(parent.id),
         comments: async (parent: any) => await getPostComment(parent.id),
+        images: async (parent: any) => await getPostImages(parent.id),
     },
     Like: {
         User: async (parent: any) => await getUserById(parent.authorId),
     },
     Comment: {
         User: async (parent: any) => await getUserById(parent.authorId),
+    },
+    // status
+    Status: {
+        seenUsers: async (parent: any) => await getStatusSeenUsers(parent.id),
+        comments: async (parent: any) => await getPostComment(parent.id),
     }
 }
 export default resolvers;

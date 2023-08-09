@@ -1,5 +1,6 @@
-import { Like, Post, Comment } from "./model/Post";
+import { Like, Post, Comment, Image } from "./model/Post";
 import { Follow, User } from "./model/User";
+import { Status, StatusSeen } from "./model/status";
 
 const mysqlSync = async () => {
     // await User.sync().then(() => {
@@ -16,6 +17,15 @@ const mysqlSync = async () => {
     // })
     // await Comment.sync().then(() => {
     //     console.log("Comment table created")
+    // })
+    // await Image.sync().then(() => {
+    //     console.log("Image table created")
+    // })
+    // await Status.sync().then(() => {
+    //     console.log("Image table created")
+    // })
+    // await StatusSeen.sync().then(() => {
+    //     console.log("Image table created")
     // })
 }
 
