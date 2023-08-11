@@ -21,7 +21,7 @@ const createUserStatus = async (data: { caption: string, image: string, authorId
     try {
         await Status.create({
             caption: data.caption,
-            images: data.image,
+            image: data.image,
             authorId: data.authorId
         })
         return "Status created"

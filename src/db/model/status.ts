@@ -7,7 +7,7 @@ const Status = sequelize.define("Status", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    images: {
+    image: {
         type: DataTypes.STRING,
         allowNull: false
     },
