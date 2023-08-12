@@ -15,7 +15,7 @@ export interface User {
     followers: User[];
     following: User[];
     requests: Requests[];
-    conversations: Conversation[];
+    conversations: ConversationType[];
 }
 export type requestsTypes = "followers" | "following" | "friendRequests" | "conversations";
 export type requestType = "SENDER" | "RECEIVER"
@@ -28,15 +28,18 @@ export interface Requests {
     requestType: requestType;
 }
 
-export interface Conversation {
+export interface ConversationType {
     id: string;
-    users: User[];
-    messages: Message[];
+    usersId: string;
+    messageData: Message[];
     createAt: string;
     updateAt: string;
     updateDate: string;
     isGroup: boolean;
-    GroupData: GroupData;
+   
+    lastMessage: string
+    lastMessageTime: string
+    lastMessageAuthor: string
 }
 
 
@@ -59,4 +62,13 @@ export interface Message {
     updateAt: string;
     updateDate: string;
     user: User;
+}
+
+export interface createConversationType {
+    conversationId?: string
+    users: string[]
+    name?: string
+    avatar?: string
+    description?: string
+    isGroup?: string
 }

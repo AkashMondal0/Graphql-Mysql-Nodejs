@@ -1,3 +1,4 @@
+import { Conversation } from "./model/Conversation";
 import { Like, Post, Comment, Image } from "./model/Post";
 import { Follow, User } from "./model/User";
 import { Status, StatusSeen } from "./model/status";
@@ -26,6 +27,10 @@ const mysqlSync = async () => {
     // })
     // await StatusSeen.sync().then(() => {
     //     console.log("Image table created")
+    // })
+
+    // await Conversation.sync().then(() => {
+    //     console.log("Conversation table created")
     // })
 }
 

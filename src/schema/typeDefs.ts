@@ -1,3 +1,4 @@
+
 const typeDefs = `#graphql
 
   type User {
@@ -14,7 +15,6 @@ const typeDefs = `#graphql
     status: [Status]
     followers: [User]
     following: [User]
-    requests: Request
     conversations: [Conversation]
     createAt: String
     updateAt: String
@@ -30,20 +30,23 @@ const typeDefs = `#graphql
 
   type Conversation{
     id: ID!
-    users: [User!]
-    messages: [Message]
-    createDate: String
-    updateDate: String
+    usersId: [String]
+    messageData: [Message]
     isGroup: Boolean
+    GroupData: GroupData
+    createAt: String
+    updateAt: String
+    lastMessage: String
+    lastMessageTime: String
+    lastMessageAuthor: String
+  }
+
+  type GroupData{
     name: String
     avatar: String
     description: String
-    members: [User!]
-    admins: [User!]
-    owner: User
-    requests: [Request]
-    createAt: String
-    updateAt: String
+    admins: [String!]
+    CreatedUser: String
   }
 
   type Message {
@@ -51,18 +54,10 @@ const typeDefs = `#graphql
     text: String
     images: [String]
     replyTo: Message
+    replyId: String
     createAt: String
     updateAt: String
-    user: User
-  }
-
-  type Request{
-    id: ID!
-    user: User!
-    type: String
-    createAt: String
-    updateAt: String
-    RequestType: String
+    userId: String
   }
 
   type Status{
@@ -101,6 +96,7 @@ const typeDefs = `#graphql
   }
 
   type Query {
+
     # users queries
     users: [User!]!
     user(id: ID!): User!
@@ -110,18 +106,28 @@ const typeDefs = `#graphql
     getUserFollowers(id: String!): [Follow]
     getUserFollowing(id: String!): [Follow]
     userLogin(email: String! password: String!): String
+
+    # conversation queries
+    conversations: [Conversation!]!
+    conversation(userId: String!):[Conversation!]!
+
     # post queries
     posts: [Post!]!
     post(id: ID!): Post!
     postByAuthorId(authorId: String!): [Post]
     likeByPostId(postId: String!): [Like]
+
     # status queries
     status: [Status!]!
   }
+  
+  
+
 
   # mutations
   type Mutation {
-    # authentication
+
+    # authentication   
     userRegister(
       email: String!
       name: String!
@@ -139,6 +145,24 @@ const typeDefs = `#graphql
     ): String!
     userDelete(id: ID!): String!
 
+    # conversation
+    conversationsCreate(users: [String!]!,
+    isGroup:String!,name: String,
+    avatar: String,description: String): String!
+    conversationsMessageDataUpdate(
+      conversationId: String!,
+      text: String!
+      images: [String]!
+      replyId: String!
+      userId: String!
+       ): String!
+    conversationsAddUsers(conversationId: String!, usersId: [String!]!): String!
+    conversationsRemoveUsers(conversationId: String!, usersIs: [String!]!): String!
+    conversationsUpdate(conversationId: String!
+      name: String!,avatar: String!,description: String!
+    ): String!
+    conversationsDelete(conversationId: String!): String!
+
     # post
     postCreate(
       caption: String!
@@ -153,6 +177,8 @@ const typeDefs = `#graphql
     postDelete(id: ID!): String!
     createLikeAndDisLike(postId: String!, authorId: String!): String!
     createComment(postId: String!, authorId: String!, content: String!): String!
+
+    
     # status
     statusCreate(
       caption: String!
