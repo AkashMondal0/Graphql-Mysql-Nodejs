@@ -156,8 +156,12 @@ const typeDefs = `#graphql
       replyId: String!
       userId: String!
        ): String!
+    conversationsMessageDataDelete(
+      conversationId: String!,
+      messageId: [String!]!
+    ): String!
     conversationsAddUsers(conversationId: String!, usersId: [String!]!): String!
-    conversationsRemoveUsers(conversationId: String!, usersIs: [String!]!): String!
+    conversationsRemoveUsers(conversationId: String!, usersId: [String!]!): String!
     conversationsUpdate(conversationId: String!
       name: String!,avatar: String!,description: String!
     ): String!

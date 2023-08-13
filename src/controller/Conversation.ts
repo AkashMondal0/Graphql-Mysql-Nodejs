@@ -144,9 +144,28 @@ const addUserToConversation = async (data: {
 }
 
 const removeUserFromConversation = async (data:
-    { conversationId: string, users: string[] }) => {
-    console.log(data)
-    return "deleted"
+    { conversationId: string, usersId: string[] }) => {
+    try {
+        const conversation = await Conversation.findOne({
+            where: {
+                id: data.conversationId
+            }
+        })
+        const usersIdInGroup = conversation?.dataValues.usersId
+        // if group is true then add user to group
+        const newUserList = usersIdInGroup.filter((id: string) => !data.usersId.includes(id))
+        await Conversation.update({
+            usersId: newUserList
+        }, {
+            where: {
+                id: data.conversationId
+            }
+        })
+        return "user deleted to conversation group"
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
 /// Message -----------------------------
@@ -156,7 +175,10 @@ const CreateAndAddMessage = async (data: MessagesType) => {
         const newMessage = { ...data, id: uuid4() }
 
         await Conversation.update({
-            messageData: sequelize.fn('JSON_ARRAY_APPEND', sequelize.col('messageData'), '$', JSON.stringify(newMessage))
+            messageData: sequelize.fn('JSON_ARRAY_APPEND', sequelize.col('messageData'), '$', JSON.stringify(newMessage)),
+            lastMessage: data.text,
+            lastMessageTime: new Date().toISOString(),
+            lastMessageAuthor: data.userId
         }, {
             where: {
                 id: data.conversationId
@@ -171,8 +193,41 @@ const CreateAndAddMessage = async (data: MessagesType) => {
 }
 
 
-const deleteMessage = async () => {
+const DeleteMessage = async (
+    conversationId: string,
+    messageId: string[]
+) => {
+    try {
 
+        const conversation = await Conversation.findOne({
+            where: {
+                id: conversationId
+            }
+        })
+        const messages = conversation?.dataValues.messageData.map((message: any) => JSON.parse(message))
+
+        for (let index = 0; index < messageId.length; index++) {
+
+            const findIndex = messages.findIndex((message: any) => message.id === messageId[index]) // find index of delete message
+
+            if (findIndex !== -1) {
+                await Conversation.update({
+                    messageData: sequelize.fn('JSON_REMOVE', sequelize.col('messageData'), `$[${findIndex}]`)
+                }, {
+                    where: {
+                        id: conversationId
+                    }
+                })
+            } else {
+                return "Message not found"
+            }
+        }
+
+        return "message deleted"
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong")
+    }
 }
 
 export {
@@ -181,7 +236,7 @@ export {
     removeUserFromConversation,
     findUserConversation,
     CreateAndAddMessage,
-    deleteMessage,
+    DeleteMessage,
     DeleteConversation,
     UpdateConversation
 }

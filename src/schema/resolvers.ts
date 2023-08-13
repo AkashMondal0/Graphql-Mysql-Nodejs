@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CreateAndAddMessage, DeleteConversation, UpdateConversation, addUserToConversation, createConversation, findUserConversation, removeUserFromConversation } from "../controller/Conversation";
+import { CreateAndAddMessage, DeleteConversation, DeleteMessage, UpdateConversation, addUserToConversation, createConversation, findUserConversation, removeUserFromConversation } from "../controller/Conversation";
 import { getUserFollowers, getUserFollowing, userFollowAndUnFollow } from "../controller/Follow";
 import { createComment, createLikeAndDisLike, createPost, deletePost, getPost, getPostComment, getPostImages, getPostLikes, getPosts, getUserAllPosts, updatePost } from "../controller/Post";
 import { createUserStatus, deleteUserStatus, getStatusSeenUsers, getUserAllStatus, updateSeenStatus } from "../controller/Status";
@@ -35,9 +35,9 @@ const resolvers = {
         conversationsCreate: async (_: any, data: createConversationType) => await createConversation(data),
         conversationsUpdate : async (_: any, data: createConversationType) => await UpdateConversation(data),
         conversationsDelete: async (_: any, data: { conversationId: string }) => await DeleteConversation(data.conversationId),
-
+        conversationsMessageDataDelete: async (_: any, data: { conversationId: string, messageId: string[] }) => await DeleteMessage(data.conversationId, data.messageId),
         conversationsAddUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await addUserToConversation(data),
-        conversationsRemoveUsers: async (_: any, data: { conversationId: string, users: string[] }) => await removeUserFromConversation(data),
+        conversationsRemoveUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await removeUserFromConversation(data),
         conversationsMessageDataUpdate: async (_: any, data: MessagesType) => await CreateAndAddMessage(data),
 
         // post mutations
