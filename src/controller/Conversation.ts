@@ -37,14 +37,16 @@ const createConversation = async (data: createConversationType) => {
         const conversations = await sequelize.query(
             `SELECT *
             FROM msdb.conversations
-            WHERE JSON_CONTAINS(usersId, '"${users[0]}"', '$') and JSON_CONTAINS(usersId, '"${users[1]}"', '$')`,
+            WHERE JSON_CONTAINS(usersId, '"${users[0]}"', '$') and JSON_CONTAINS(usersId, '"${users[1]}"', '$') and isGroup = false;`,
             { mapToModel: true, model: Conversation })
+
+        const _is_group = isGroup === "true" ? true : false
 
         const createNewConversation = async () => {
             await Conversation.create({
                 id: uuid4(),
                 messageData: [],
-                isGroup: users.length > 2 ? true : false,
+                isGroup: _is_group,
                 GroupData: {
                     admin: [
                         users[0]
@@ -58,14 +60,19 @@ const createConversation = async (data: createConversationType) => {
             })
         }
 
-        if (conversations.length === 0 && !isGroup) {
-            createNewConversation()
-            return "Conversation created"
-        } else if (isGroup) {
+        if (conversations.length === 0 && isGroup !== "true") {
+            if (users.length === 2) {
+                createNewConversation()
+                return "Conversation created"
+            } else {
+                return "member length must be 2"
+            }
+        } else if (_is_group) {
             createNewConversation()
             return "Conversation created with group"
         }
         else {
+            // console.log(conversations)
             return "Conversation already exist"
         }
     } catch (error) {
