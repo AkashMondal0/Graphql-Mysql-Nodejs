@@ -15,18 +15,15 @@ const Status = sequelize.define("Status", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-})
-
-const StatusSeen = sequelize.define("StatusSeen", {
-    userId: {
+    id:{
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        primaryKey: true
     },
-    statusId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+    statusSeen:{
+        type: DataTypes.JSON,
+        allowNull: true,
+    }
 })
 
 Status.belongsTo(User, { foreignKey: 'authorId' });
@@ -34,5 +31,4 @@ Status.hasMany(User, { foreignKey: 'id' });
 
 export {
     Status,
-    StatusSeen
 };

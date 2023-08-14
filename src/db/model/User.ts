@@ -34,28 +34,6 @@ const User = sequelize.define("user", {
         allowNull: true
     },
 });
-
-const Follow = sequelize.define("follow", {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    followerId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        field: 'followerId',
-    },
-    followingId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        field: 'followingId',
-    },
-})
-// Define the foreign key relationships
-Follow.belongsTo(User, { foreignKey: 'followerId' });
-Follow.belongsTo(User, { foreignKey: 'followingId' });
 export {
-    User,
-    Follow
+    User
 };

@@ -10,39 +10,23 @@ const Post = sequelize.define("Post", {
     },
     caption: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     images: {
-        type: DataTypes.STRING,
+        type: DataTypes.JSON,
         allowNull: false
     },
     authorId: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    likes: {
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
 });
 
-const Image = sequelize.define("Image", {
-    postId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    imageUrl: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    authorId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    id:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        primaryKey: true
-    }
-});
-
-const Comment = sequelize.define("Comment", {
+const PostComment = sequelize.define("PostComment", {
     content: {
         type: DataTypes.STRING,
         allowNull: false
@@ -55,34 +39,23 @@ const Comment = sequelize.define("Comment", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
-
-const Like = sequelize.define("Like", {
-    reaction: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
+    likes: {
+        type: DataTypes.JSON,
+        allowNull: true,
     },
-    authorId: {
+    id: {
         type: DataTypes.STRING,
         allowNull: false,
+        primaryKey: true
     },
-    postId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
+    
 });
 
 Post.belongsTo(User, { foreignKey: 'authorId' });
-Like.belongsTo(User, { foreignKey: 'authorId' });
-Like.belongsTo(Post, { foreignKey: 'postId' });
-// Comment.belongsTo(Post, { foreignKey: 'postId' });
-Comment.belongsTo(User, { foreignKey: 'authorId' });
-Image.belongsTo(Post, { foreignKey: 'postId' });
-Image.belongsTo(User, { foreignKey: 'authorId' });
+PostComment.belongsTo(User, { foreignKey: 'authorId' });
+// PostComment.belongsTo(Post, { foreignKey: 'postId' });
 
 export {
     Post,
-    Like,
-    Comment,
-    Image
+    PostComment
 };

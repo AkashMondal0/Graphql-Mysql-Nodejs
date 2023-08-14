@@ -5,20 +5,46 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { json } from 'body-parser';
+import { makeExecutableSchema } from '@graphql-tools/schema';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
 import resolvers from './schema/resolvers';
 import typeDefs from './schema/typeDefs';
 import mysqlSync from './db/sync';
+
+const PORT = 4000;
 interface MyContext {
   token?: string;
 }
 
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+
 const app = express();
 const httpServer = http.createServer(app);
-const server = new ApolloServer<MyContext>({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+
+
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
 });
+const serverCleanup = useServer({ schema }, wsServer);
+
+const server = new ApolloServer<MyContext>({
+  schema,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer }),
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await serverCleanup.dispose();
+          },
+        };
+      },
+    },],
+});
+
+
 
 const main = async () => {
   await server.start();
@@ -35,11 +61,15 @@ const main = async () => {
     res.send('Hello World!');
   });
 
-  await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000/graphql`);
+  await new Promise<void>((resolve) => httpServer.listen({ port: PORT }, resolve));
+  console.log(`🚀 Query endpoint ready at http://localhost:${PORT}/graphql`);
+  console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`);
 }
 
-mysqlSync().then(() => {
+mysqlSync()
+.then(() => {
   console.log("database synced");
   main();
+}).catch((err) => {
+  console.log("database sync error", err);
 });

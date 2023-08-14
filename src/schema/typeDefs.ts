@@ -49,23 +49,12 @@ const typeDefs = `#graphql
     CreatedUser: String
   }
 
-  type Message {
-    id: ID!
-    text: String
-    images: [String]
-    replyTo: Message
-    replyId: String
-    createAt: String
-    updateAt: String
-    userId: String
-  }
-
   type Status{
     id: ID!
     caption: String
     image: String
     createAt: String
-    seenUsers: [User]
+    statusSeen: [String]
     comments: [Comment]
   }
 
@@ -75,59 +64,58 @@ const typeDefs = `#graphql
     createAt: String
     updateAt: String
     author: User
-    likes: [Like]
+    likes: [String]
     comments: [Comment]
     images: [String]
   }
 
-  type Like{
-    id: ID!
-    User: User
-    Post: Post
-    reaction: String
-  }
-
   type Comment{
     id: ID!
-    User: User
+    authorId: String
     content: String
+    likes: [String]
     createAt: String
     updateAt: String
   }
-
+  type Message {
+    id: ID!
+    text: String
+    images: [String]
+    replyId: String
+    createAt: String
+    receiverId: String!
+    senderId: String!
+    roomId: String!
+  }
   type Query {
-
-    # users queries
+      #//! message queries
+   userMessages(userId:String!): [Message]
+    #//! users queries
     users: [User!]!
     user(id: ID!): User!
     name(name: String!): User!
     userByNameAndEmail(Text: String!): [User]
-    userByToken(token: String!): User!
+    userLoginByToken(token: String!): User!
     getUserFollowers(id: String!): [Follow]
     getUserFollowing(id: String!): [Follow]
     userLogin(email: String! password: String!): String
 
-    # conversation queries
+    #//! conversation queries
     conversations: [Conversation!]!
     conversation(userId: String!):[Conversation!]!
 
-    # post queries
+    #//! post queries
     posts: [Post!]!
-    post(id: ID!): Post!
-    postByAuthorId(authorId: String!): [Post]
-    likeByPostId(postId: String!): [Like]
+    postById(id: ID!): Post!
 
-    # status queries
+    #//! status queries
     status: [Status!]!
+
   }
-  
-  
 
-
-  # mutations
+  #//? mutations
   type Mutation {
-
-    # authentication   
+    #//! authentication   
     userRegister(
       email: String!
       name: String!
@@ -145,7 +133,7 @@ const typeDefs = `#graphql
     ): String!
     userDelete(id: ID!): String!
 
-    # conversation
+    #//! conversation
     conversationsCreate(users: [String!]!,
     isGroup:String!,name: String,
     avatar: String,description: String): String!
@@ -167,7 +155,7 @@ const typeDefs = `#graphql
     ): String!
     conversationsDelete(conversationId: String!): String!
 
-    # post
+    #//! post
     postCreate(
       caption: String!
       images: [String]!
@@ -175,15 +163,15 @@ const typeDefs = `#graphql
     ): String!
     postUpdate(
       id: ID!
-      caption: String
-      images: [String]
+      caption: String!
     ): String!
     postDelete(id: ID!): String!
-    createLikeAndDisLike(postId: String!, authorId: String!): String!
-    createComment(postId: String!, authorId: String!, content: String!): String!
-
+    postLikeAndDisLike(postId: String!, authorId: String!): String!
+    postCommentCreate(postId: String!, authorId: String!, content: String!): String!
+    postCommentDelete(commentId: String!): String!
+    postCommentUpdate(commentId: String!, content: String!): String!
     
-    # status
+    #//! status
     statusCreate(
       caption: String!
       image: String!
@@ -192,6 +180,20 @@ const typeDefs = `#graphql
     statusSeenUpdate(statusId: String!, userId: String!): String!
     statusDelete(id: ID!): String!
     statusCreateComment(statusId: String!, authorId: String!, content: String!): String!
+
+    #//! message
+    sendMessage(
+      text: String!
+      images: [String]
+      replyId: String
+      senderId: String!, 
+      receiverId: String!
+      roomId: String!
+      ): Message
+  }
+  
+  type Subscription {
+    LiveChatRoom(roomId: String,userId:String): Message
   }`;
 
 export default typeDefs;
