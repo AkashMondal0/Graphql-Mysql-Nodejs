@@ -1,10 +1,10 @@
 import uuid4 from "uuid4"
-import { PostComment } from "../db/model/Post"
+import CommentModel from "../db/model/Comments.Model"
 
-// Comment
+
 const getComments = async (id: string) => {
     try {
-        const comments = await PostComment.findAll({
+        const comments = await CommentModel.findAll({
             where: { postId: id }
         })
         return comments
@@ -15,11 +15,12 @@ const getComments = async (id: string) => {
 }
 const createComment = async (postId: string, authorId: string, content: string) => {
     try {
-        await PostComment.create({
+        await CommentModel.create({
             id: uuid4(),
             content,
             postId,
             authorId,
+            likes: [],
         })
         return "Comment added"
     } catch (error) {
@@ -30,7 +31,7 @@ const createComment = async (postId: string, authorId: string, content: string) 
 
 const updateComment = async (id: string, content: string) => {
     try {
-        await PostComment.update({ content }, { where: { id } })
+        await CommentModel.update({ content }, { where: { id } })
         return "Comment updated"
     } catch (error) {
         console.log(error)
@@ -39,7 +40,7 @@ const updateComment = async (id: string, content: string) => {
 }
 const deleteComment = async (id: string) => {
     try {
-        await PostComment.destroy({ where: { id } })
+        await CommentModel.destroy({ where: { id } })
         return "Comment deleted"
     } catch (error) {
         console.log(error)
@@ -48,9 +49,31 @@ const deleteComment = async (id: string) => {
 }
 
 
+const CommentLikeAndDislike = async (id: string, userId: string) => {
+    
+    try {
+        const findComment = await CommentModel.findByPk(id)
+        let commentLikes =  findComment?.dataValues.likes
+        if (commentLikes?.includes(userId)) {
+            commentLikes = commentLikes.filter((like: string) => like !== userId)
+            await CommentModel.update({ likes: commentLikes }, { where: { id } })
+            return "comment disliked"
+        }else{
+            commentLikes?.push(userId)
+            await CommentModel.update({ likes: commentLikes }, { where: { id } })
+            return "comment liked"
+        }
+    } catch (error) {
+        console.log(error)
+        return new Error("Something went wrong") 
+    }
+}
+
+
 export {
     getComments,
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    CommentLikeAndDislike
 }

@@ -1,37 +1,28 @@
-import { Conversation } from "./model/Conversation";
-import { Post, PostComment } from "./model/Post";
-import { User } from "./model/User";
-import { Status } from "./model/status";
+import CommentModel from "./model/Comments.Model";
+import ConversationModel from "./model/Conversation.Model";
+import PostModel from "./model/Post.Model";
+import StatusModel from "./model/Status.Model";
+import UserModel from "./model/User.Model";
 
 
-const mysqlSync = async () => {
-    // await User.sync().then(() => {
+
+const ModelSync = async () => {
+    // await UserModel.sync({ force: true }).then(() => {
     //     console.log("User table created")
     // });
-    // await Post.sync({force:true}).then(() => {
+    // await PostModel.sync({ force: true }).then(() => {
     //     console.log("Post table created")
     // });
-    // await PostComment.sync({force:true}).then(() => {
+    // await CommentModel.sync({ force: true }).then(() => {
     //     console.log("Comment table created")
     // })
-    // await Status.sync({force:true}).then(() => {
+    // await StatusModel.sync({ force: true }).then(() => {
     //     console.log("Image table created")
     // })
-    // await Conversation.sync().then(() => {
+    // await ConversationModel.sync({ force: true }).then(() => {
     //     console.log("Conversation table created")
     // })
-    // await Follow.sync().then(() => {
-    //     console.log("Follow table created")
-    // })
-    // await Like.sync().then(() => {
-    //     console.log("Like table created")
-    // })
-    // await Image.sync().then(() => {
-    //     console.log("Image table created")
-    // })
-    // await StatusSeen.sync().then(() => {
-    //     console.log("Image table created")
-    // })
+    console.log("All tables synced")
 }
 
-export default mysqlSync;
+export default ModelSync;

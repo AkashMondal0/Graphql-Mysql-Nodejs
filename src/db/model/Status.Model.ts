@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db';
-import { User } from './User';
+import UserModel from './User.Model';
 
-const Status = sequelize.define("Status", {
+const StatusModel = sequelize.define("Status", {
     caption: {
         type: DataTypes.STRING,
         allowNull: false
@@ -26,9 +26,5 @@ const Status = sequelize.define("Status", {
     }
 })
 
-Status.belongsTo(User, { foreignKey: 'authorId' });
-Status.hasMany(User, { foreignKey: 'id' });
-
-export {
-    Status,
-};
+StatusModel.belongsTo(UserModel, { foreignKey: 'authorId' });
+export default StatusModel;

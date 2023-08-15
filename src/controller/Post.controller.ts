@@ -1,11 +1,12 @@
 /* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import uuid4 from "uuid4"
-import { Post } from "../db/model/Post"
+import PostModel from "../db/model/Post.Model"
+
 
 const getPostsByAuthorId = async (authorId: string) => {
     try {
-        let posts = await Post.findAll({
+        let posts = await PostModel.findAll({
             where: {
                 authorId: authorId
             }
@@ -20,7 +21,7 @@ const getPostsByAuthorId = async (authorId: string) => {
 // post
 const getPostById = async (id: string) => {
     try {
-        let post = await Post.findOne({
+        let post = await PostModel.findOne({
             where: {
                 id: id
             }
@@ -34,7 +35,7 @@ const getPostById = async (id: string) => {
 }
 const getAllPosts = async () => {
     try {
-        const posts = await Post.findAll()
+        const posts = await PostModel.findAll()
         return posts
     } catch (error) {
         console.log(error)
@@ -43,7 +44,7 @@ const getAllPosts = async () => {
 }
 const createPost = async (data: { caption: string, images: string[], authorId: string }) => {
     try {
-        await Post.create({
+        await PostModel.create({
             id: uuid4(),
             caption: data.caption,
             images: data.images,
@@ -61,7 +62,7 @@ const createPost = async (data: { caption: string, images: string[], authorId: s
 const updatePost = async (data: { id: string, caption: string, images: string[] }) => {
 
     try {
-        await Post.update({
+        await PostModel.update({
             caption: data.caption,
             images: data.images
         }, {
@@ -78,7 +79,7 @@ const updatePost = async (data: { id: string, caption: string, images: string[] 
 }
 const deletePost = async (PostId: string) => {
     try {
-        await Post.destroy({
+        await PostModel.destroy({
             where: {
                 id: PostId
             }
@@ -93,14 +94,14 @@ const deletePost = async (PostId: string) => {
 const likeAndDisLikePost = async (postId: string, authorId: string) => {
     try {
         // check if user already liked the post
-        const findPost = await Post.findOne({
+        const findPost = await PostModel.findOne({
             where: {
                 id: postId
             }
         })
         let likes = findPost?.dataValues.likes
         if (likes.includes(authorId) && findPost) {
-            Post.update({
+            PostModel.update({
                 likes: likes.filter((id: string) => id !== authorId)
             }, {
                 where: {
@@ -109,7 +110,7 @@ const likeAndDisLikePost = async (postId: string, authorId: string) => {
             })
             return "Post disliked"
         } else {
-            Post.update({
+            PostModel.update({
                 likes: [...likes, authorId]
             }, {
                 where: {

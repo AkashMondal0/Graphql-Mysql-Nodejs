@@ -26,8 +26,8 @@ export interface MessagesType {
     text: string,
     images: string[],
     replyId: string,
-    createAt: string,
-    updateAt: string,
+    createdAt: string,
+    updatedAt: string,
     userId: string,
 }
 
@@ -38,7 +38,7 @@ export interface MessagesType {
 //     reply: initialReply,
 //     seenIds: [],
 //     createdAt: undefined,
-//     updateAt: undefined,
+//     updatedAt: undefined,
 //     conversationId: "",
 //     messageUserId: "",
 //     seen: []

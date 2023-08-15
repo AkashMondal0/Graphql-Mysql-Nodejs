@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db';
 
-const Conversation = sequelize.define("Conversation", {
+const ConversationModel = sequelize.define("Conversation", {
     id: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -15,7 +15,7 @@ const Conversation = sequelize.define("Conversation", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
     },
-    GroupData: {
+    groupData: {
         type: DataTypes.JSON,
         allowNull: true,
     },
@@ -38,6 +38,4 @@ const Conversation = sequelize.define("Conversation", {
 })
 
 
-export {
-    Conversation
-};
+export default ConversationModel;

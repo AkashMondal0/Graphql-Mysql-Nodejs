@@ -8,9 +8,9 @@ import { json } from 'body-parser';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { WebSocketServer } from 'ws';
 import { useServer } from 'graphql-ws/lib/use/ws';
-import resolvers from './schema/resolvers';
-import typeDefs from './schema/typeDefs';
-import mysqlSync from './db/sync';
+import resolvers from './graphql/resolvers';
+import typeDefs from './graphql/typeDefs';
+import ModelSync from './db/sync';
 
 const PORT = 4000;
 interface MyContext {
@@ -19,10 +19,8 @@ interface MyContext {
 
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-
 const app = express();
 const httpServer = http.createServer(app);
-
 
 const wsServer = new WebSocketServer({
   server: httpServer,
@@ -45,7 +43,6 @@ const server = new ApolloServer<MyContext>({
 });
 
 
-
 const main = async () => {
   await server.start();
   app.use(
@@ -66,9 +63,8 @@ const main = async () => {
   console.log(`🚀 Subscription endpoint ready at ws://localhost:${PORT}/graphql`);
 }
 
-mysqlSync()
+ModelSync()
 .then(() => {
-  console.log("database synced");
   main();
 }).catch((err) => {
   console.log("database sync error", err);

@@ -1,18 +1,18 @@
+/* eslint-disable prefer-const */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import uuid4 from "uuid4"
-import { Conversation } from "../db/model/Conversation"
 import sequelize from "../db/db"
-import { ConversationType, createConversationType } from "../interface/User"
 import { MessagesType } from "../interface/MessageTypes"
+import ConversationModel from "../db/model/Conversation.Model"
 
 
 /// conversation --------------------
 const findUserConversation = async (userId: string) => {
-    const ConversationArray: ConversationType[] = []
+    const ConversationArray = []
     try {
         const conversations = await sequelize.query(`
         SELECT * FROM msdb.conversations WHERE JSON_CONTAINS(usersId, '"${userId}"', '$');`,
-            { mapToModel: true, model: Conversation })
+            { mapToModel: true, model: ConversationModel })
 
         for (let index = 0; index < conversations.length; index++) {
             const element = conversations[index];
@@ -31,23 +31,30 @@ const findUserConversation = async (userId: string) => {
     }
 }
 
-const createConversation = async (data: createConversationType) => {
+const createConversation = async (data: {
+    conversationId?: string
+    users: string[]
+    name?: string
+    avatar?: string
+    description?: string
+    isGroup?: string
+}) => {
     const { users, name, avatar, description, isGroup } = data
     try {
         const conversations = await sequelize.query(
             `SELECT *
             FROM msdb.conversations
             WHERE JSON_CONTAINS(usersId, '"${users[0]}"', '$') and JSON_CONTAINS(usersId, '"${users[1]}"', '$') and isGroup = false;`,
-            { mapToModel: true, model: Conversation })
+            { mapToModel: true, model: ConversationModel })
 
         const _is_group = isGroup === "true" ? true : false
 
         const createNewConversation = async () => {
-            await Conversation.create({
+            await ConversationModel.create({
                 id: uuid4(),
                 messageData: [],
                 isGroup: _is_group,
-                GroupData: {
+                groupData: {
                     admin: [
                         users[0]
                     ],
@@ -81,13 +88,18 @@ const createConversation = async (data: createConversationType) => {
     }
 }
 
-
-const UpdateConversation = async (data: createConversationType) => {
+const UpdateConversation = async (data: {
+    conversationId?: string
+    users: string[]
+    name?: string
+    avatar?: string
+    description?: string
+    isGroup?: string
+}) => {
     const { conversationId, name, avatar, description } = data
-
     try {
-        await Conversation.update({
-            GroupData: {
+        await ConversationModel.update({
+            groupData: {
                 name: name,
                 avatar: avatar,
                 description: description,
@@ -106,7 +118,7 @@ const UpdateConversation = async (data: createConversationType) => {
 
 const DeleteConversation = async (conversationId: string) => {
     try {
-        await Conversation.destroy({
+        await ConversationModel.destroy({
             where: {
                 id: conversationId
             }
@@ -124,26 +136,44 @@ const addUserToConversation = async (data: {
     conversationId: string,
     usersId: string[]
 }) => {
+    let alreadyUserList: string[] = []
+    let newJoinUserList: string[] = []
     try {
-        const conversation = await Conversation.findOne({
+        const conversation = await ConversationModel.findOne({
             where: {
                 id: data.conversationId
             }
         })
-        const usersIdInGroup = conversation?.dataValues.usersId
-        // if group is true then add user to group
-        for (let index = 0; index < data.usersId.length; index++) {
-            const userId = data.usersId[index];
+        if (conversation?.dataValues.isGroup) {
+            const usersIdInGroup = conversation?.dataValues.usersId
+            // if group is true then add user added in to this group
+            for (let index = 0; index < data.usersId.length; index++) {
+                const userId = data.usersId[index];
 
-            if (!usersIdInGroup.includes(userId)) {
-                // console.log(userId)
-                await sequelize.query(`
-                    UPDATE msdb.conversations
-                    SET usersId = JSON_ARRAY_APPEND(usersId, '$', '${userId}')
-                    WHERE id = '${data.conversationId}';`)
+                if (!usersIdInGroup.includes(userId)) {
+                    //! console.log(`new user ${userId} added to conversation group`)
+                    newJoinUserList.push(userId)
+                } else {
+                    //! console.log(`user ${userId} already in conversation group`)
+                    alreadyUserList.push(userId)
+                }
             }
+
+            const newUserList = [...usersIdInGroup, ...newJoinUserList]
+            await ConversationModel.update({
+                usersId: newUserList
+            }, {
+                where: {
+                    id: data.conversationId
+                }
+            })
+            return `users name {${newJoinUserList.map((i: string) => i)}} 
+            added to conversation group 
+            and {${alreadyUserList.map((i: string) => i)}} already in conversation group`
+
+        } else {
+            return "this not a group"
         }
-        return "user added to conversation group"
     } catch (error) {
         console.log(error)
         return new Error("Something went wrong")
@@ -153,7 +183,7 @@ const addUserToConversation = async (data: {
 const removeUserFromConversation = async (data:
     { conversationId: string, usersId: string[] }) => {
     try {
-        const conversation = await Conversation.findOne({
+        const conversation = await ConversationModel.findOne({
             where: {
                 id: data.conversationId
             }
@@ -161,14 +191,14 @@ const removeUserFromConversation = async (data:
         const usersIdInGroup = conversation?.dataValues.usersId
         // if group is true then add user to group
         const newUserList = usersIdInGroup.filter((id: string) => !data.usersId.includes(id))
-        await Conversation.update({
+        await ConversationModel.update({
             usersId: newUserList
         }, {
             where: {
                 id: data.conversationId
             }
         })
-        return "user deleted to conversation group"
+        return `users name {${data.usersId.map((i: string) => i)}} removed from conversation group`
     } catch (error) {
         console.log(error)
         return new Error("Something went wrong")
@@ -181,7 +211,7 @@ const CreateAndAddMessage = async (data: MessagesType) => {
     try {
         const newMessage = { ...data, id: uuid4() }
 
-        await Conversation.update({
+        await ConversationModel.update({
             messageData: sequelize.fn('JSON_ARRAY_APPEND', sequelize.col('messageData'), '$', JSON.stringify(newMessage)),
             lastMessage: data.text,
             lastMessageTime: new Date().toISOString(),
@@ -206,7 +236,7 @@ const DeleteMessage = async (
 ) => {
     try {
 
-        const conversation = await Conversation.findOne({
+        const conversation = await ConversationModel.findOne({
             where: {
                 id: conversationId
             }
@@ -218,7 +248,7 @@ const DeleteMessage = async (
             const findIndex = messages.findIndex((message: any) => message.id === messageId[index]) // find index of delete message
 
             if (findIndex !== -1) {
-                await Conversation.update({
+                await ConversationModel.update({
                     messageData: sequelize.fn('JSON_REMOVE', sequelize.col('messageData'), `$[${findIndex}]`)
                 }, {
                     where: {

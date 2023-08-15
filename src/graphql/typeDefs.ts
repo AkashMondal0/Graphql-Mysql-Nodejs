@@ -16,16 +16,16 @@ const typeDefs = `#graphql
     followers: [User]
     following: [User]
     conversations: [Conversation]
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
   }
 
   type Follow{
     id: ID!
     followerId: String!
     followingId: String!
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
   } 
 
   type Conversation{
@@ -33,15 +33,15 @@ const typeDefs = `#graphql
     usersId: [String]
     messageData: [Message]
     isGroup: Boolean
-    GroupData: GroupData
-    createAt: String
-    updateAt: String
+    groupData: groupData
+    createdAt: String
+    updatedAt: String
     lastMessage: String
     lastMessageTime: String
     lastMessageAuthor: String
   }
 
-  type GroupData{
+  type groupData{
     name: String
     avatar: String
     description: String
@@ -53,7 +53,7 @@ const typeDefs = `#graphql
     id: ID!
     caption: String
     image: String
-    createAt: String
+    createdAt: String
     statusSeen: [String]
     comments: [Comment]
   }
@@ -61,8 +61,8 @@ const typeDefs = `#graphql
   type Post{
     id: ID!
     caption: String
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
     author: User
     likes: [String]
     comments: [Comment]
@@ -74,15 +74,16 @@ const typeDefs = `#graphql
     authorId: String
     content: String
     likes: [String]
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
   }
+
   type Message {
     id: ID!
     text: String
     images: [String]
     replyId: String
-    createAt: String
+    createdAt: String
     receiverId: String!
     senderId: String!
     roomId: String!
@@ -137,23 +138,25 @@ const typeDefs = `#graphql
     conversationsCreate(users: [String!]!,
     isGroup:String!,name: String,
     avatar: String,description: String): String!
-    conversationsMessageDataUpdate(
+    conversationsUpdate(conversationId: String!
+      name: String!,avatar: String!,description: String!
+    ): String!
+    conversationsDelete(conversationId: String!): String!
+
+    #//! conversation message
+    conversationsMessageAdd(
       conversationId: String!,
       text: String!
       images: [String]!
       replyId: String!
       userId: String!
        ): String!
-    conversationsMessageDataDelete(
+    conversationsMessageDelete(
       conversationId: String!,
       messageId: [String!]!
     ): String!
     conversationsAddUsers(conversationId: String!, usersId: [String!]!): String!
     conversationsRemoveUsers(conversationId: String!, usersId: [String!]!): String!
-    conversationsUpdate(conversationId: String!
-      name: String!,avatar: String!,description: String!
-    ): String!
-    conversationsDelete(conversationId: String!): String!
 
     #//! post
     postCreate(
@@ -170,6 +173,7 @@ const typeDefs = `#graphql
     postCommentCreate(postId: String!, authorId: String!, content: String!): String!
     postCommentDelete(commentId: String!): String!
     postCommentUpdate(commentId: String!, content: String!): String!
+    commentLikeAndDisLike(commentId: String!, authorId: String!): String!
     
     #//! status
     statusCreate(

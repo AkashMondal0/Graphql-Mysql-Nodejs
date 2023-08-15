@@ -1,11 +1,12 @@
 /* eslint-disable no-var */
 import uuid4 from "uuid4"
-import { Status } from "../db/model/status"
+import StatusModel from "../db/model/Status.Model"
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 const getUserAllStatus = async (authorId: string) => {
     try {
-        const status = await Status.findAll({
+        const status = await StatusModel.findAll({
             where: {
                 authorId: authorId
             }
@@ -19,7 +20,7 @@ const getUserAllStatus = async (authorId: string) => {
 
 const createUserStatus = async (data: { caption: string, image: string, authorId: string }) => {
     try {
-        await Status.create({
+        await StatusModel.create({
             id: uuid4(),
             caption: data.caption,
             image: data.image,
@@ -35,7 +36,7 @@ const createUserStatus = async (data: { caption: string, image: string, authorId
 
 const deleteUserStatus = async (id: string) => {
     try {
-        Status.destroy({
+        StatusModel.destroy({
             where: {
                 id: id
             }
@@ -50,14 +51,14 @@ const deleteUserStatus = async (id: string) => {
 
 const updateSeenStatus = async (id: string, userId: string) => {
     try {
-        const findStatus = await Status.findOne({
+        const findStatus = await StatusModel.findOne({
             where: {
                 id: id,
             }
         })
         const alreadySeen = findStatus?.dataValues.statusSeen
         if (!alreadySeen?.includes(userId)) {
-            Status.update({
+            StatusModel.update({
                 statusSeen: [...alreadySeen, userId]
             }, {
                 where: {
