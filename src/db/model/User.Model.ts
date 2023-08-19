@@ -33,13 +33,21 @@ const UserModel = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: true
     },
-    createdDate:{
+    createdDate: {
         type: DataTypes.STRING,
         allowNull: false
     },
-    updatedDate:{
+    updatedDate: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    following: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    followers: {
+        type: DataTypes.JSON,
+        allowNull: true
     },
 });
 export default UserModel;

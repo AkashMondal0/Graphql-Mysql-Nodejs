@@ -1,86 +1,82 @@
-// import sequelize from "../db/db"
-// import { Follow, User } from "../db/model/User"
+/* eslint-disable prefer-const */
+/* eslint-disable no-unsafe-optional-chaining */
+import UserModel from "../db/model/User.Model"
+import { User } from "../interface/User"
 
-// const userFollowAndUnFollow = async (authorId: string, followUserId: string) => {
-//     try {
-//         const [alreadyFollow] = await sequelize.query(`SELECT * FROM follows where 
-//         followerId = "${authorId}" 
-//         AND followingId = "${followUserId}"`,
-//             {
-//                 model: Follow,
-//                 mapToModel: true
-//             })
-//         if (alreadyFollow?.dataValues.id) {
-//             await Follow.destroy({
-//                 where: {
-//                     id: alreadyFollow?.dataValues.id
-//                 }
-//             })
-//             return "unFollow success"
-//         } else {
-//             await Follow.create({
-//                 followerId: authorId,
-//                 followingId: followUserId
-//             })
-//             return "Follow success"
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         return (error as Error).message
-//     }
-// }
+const followAndUnFollow = async (AuthorId: string, followUserId: string) => {
+    const authorData = await UserModel.findOne({
+        where: {
+            id: AuthorId
+        }
+    })
+    const followUserData = await UserModel.findOne({
+        where: {
+            id: followUserId
+        }
+    })
 
-// const getUserFollowers = async (authorId: string) => {
-//     try {
-//         const followerArr = []
-//         const followers = await Follow.findAll({
-//             where: {
-//                 followingId: authorId
-//             }
-//         })
-//         for (let i = 0; i < followers.length; i++) {
-//             const element = followers[i];
-//             const user = await User.findOne({
-//                 where: {
-//                     id: element.dataValues.followerId
-//                 }
-//             })
-//             followerArr.push(user?.dataValues)
-//         }
-//         return followerArr
-//     } catch (error) {
-//         console.log(error);
-//         return new Error("Something went wrong")
-//     }
-// }
+    if (!authorData && !followUserData) {
+        return "user not found"
+    }
 
-// const getUserFollowing = async (authorId: string) => {
-//     try {
-//         const followingArr = []
-//         const following = await Follow.findAll({
-//             where: {
-//                 followerId: authorId
-//             }
-//         })
-//         for (let i = 0; i < following.length; i++) {
-//             const element = following[i];
-//             const user = await User.findOne({
-//                 where: {
-//                     id: element.dataValues.followingId
-//                 }
-//             })
-//             followingArr.push(user?.dataValues)
-//         }
-//         return followingArr
-//     } catch (error) {
-//         console.log(error);
-//         return new Error("Something went wrong")
-//     }
-// }
+    if (authorData?.dataValues?.following?.includes(followUserId) || followUserData?.dataValues?.followers?.includes(AuthorId)) {
+        const newAuthorFollowing = authorData?.dataValues?.following?.filter((id: string) => id !== followUserId)
+        const newListFollowUser = followUserData?.dataValues?.followers?.filter((id: string) => id !== AuthorId)
+        await UserModel.update({
+            following: newAuthorFollowing
+        }, {
+            where: {
+                id: AuthorId
+            }
+        })
+        await UserModel.update({
+            followers: newListFollowUser
+        }, {
+            where: {
+                id: followUserId
+            }
+        })
+        return "unfollow"
+    } else {
 
-// export {
-//     userFollowAndUnFollow,
-//     getUserFollowers,
-//     getUserFollowing,
+        await UserModel.update({
+            following: [...authorData?.dataValues?.following, followUserId]
+        }, {
+            where: {
+                id: AuthorId
+            }
+        })
+        await UserModel.update({
+            followers: [...followUserData?.dataValues?.followers, AuthorId]
+        }, {
+            where: {
+                id: followUserId
+            }
+        })
+        return "follow"
+    }
+}
 
-// }
+const getFollowersAndFollowingUserData = async (followersAndFollowingIds: string[]) => {
+    let UserArray: User[] = []
+    for (let index = 0; index < followersAndFollowingIds.length; index++) {
+        const UserId = followersAndFollowingIds[index];
+        const UserData = await UserModel.findOne({
+            where: {
+                id: UserId
+            }
+        })
+        if (UserData) {
+            UserArray.push(UserData.dataValues)
+        } else {
+            return []
+        }
+    }
+
+    return UserArray
+}
+
+export {
+    followAndUnFollow,
+    getFollowersAndFollowingUserData
+}

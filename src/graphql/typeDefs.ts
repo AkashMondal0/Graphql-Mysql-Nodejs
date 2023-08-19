@@ -137,7 +137,6 @@ const typeDefs = `#graphql
       password: String!
       avatar: String
     ): String
-    follow(authorId:String!, followUserId:String!): String!
     userUpdate(id: ID! 
     name:String
     email:String
@@ -147,6 +146,9 @@ const typeDefs = `#graphql
     avatar: String
     ): String!
     userDelete(id: ID!): String!
+
+    # //! follow and unFollow
+    userFollowAndUnFollow(authorId:String!, followUserId:String!): String!
 
     #//! conversation
     conversationsCreate(users: [String!]!,

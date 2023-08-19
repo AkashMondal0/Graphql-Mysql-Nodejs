@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import uuid4 from "uuid4";
 import { CommentLikeAndDislike, createComment, deleteComment, getComments, updateComment } from "../controller/Comment.controller";
 import { CreateAndAddMessage, DeleteConversation, DeleteMessage, UpdateConversation, addUserToConversation, createConversation, findUserConversation, removeUserFromConversation } from "../controller/Conversation.controller";
 import { createPost, deletePost, getAllPosts, getPostById, getPostsByAuthorId, likeAndDisLikePost, updatePost } from "../controller/Post.controller";
@@ -11,6 +10,7 @@ import { PostType } from "../interface/Post";
 import { createConversationType } from "../interface/User";
 import pubsub from "./pubsub";
 import { MessageCreate } from "../controller/subscriptions/Message.subscription";
+import { followAndUnFollow, getFollowersAndFollowingUserData } from "../controller/Follow";
 
 const resolvers = {
     Query: {
@@ -42,8 +42,9 @@ const resolvers = {
         conversationsRemoveUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await removeUserFromConversation(data),
         conversationsAddUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await addUserToConversation(data),
         conversationsMessageDelete: async (_: any, data: { conversationId: string, messageId: string[] }) => await DeleteMessage(data.conversationId, data.messageId),
-        // conversationsMessageAdd: async (_: any, data: MessagesType) => await CreateAndAddMessage(data), // TODO: add message to conversation
-
+        conversationsMessageAdd: async (_: any, data: any) => await CreateAndAddMessage(data), // TODO: add message to conversation
+        //! follow and unFollow
+        userFollowAndUnFollow: async (_: any, data: { authorId: string, followUserId: string }) => await followAndUnFollow(data.authorId, data.followUserId),
         //! post mutations
         postCreate: async (_: any, data: { caption: string, images: string[], authorId: string }) => await createPost(data),
         postUpdate: async (_: any, data: { id: string, caption: string, images: string[] }) => await updatePost(data),
@@ -86,12 +87,15 @@ const resolvers = {
         status: async (parent: any) => await getUserAllStatus(parent.id),
         conversations: async (parent: any) => await findUserConversation(parent.id),
         posts: async (parent: any) => await getPostsByAuthorId(parent.id),
+        followers: async (parent: any) => await getFollowersAndFollowingUserData(parent.dataValues.followers),
+        following: async (parent: any) => await getFollowersAndFollowingUserData(parent.dataValues.following),
     },
     // post 
     Post: {
         author: async (parent: any) => await getUserById(parent.authorId),
         comments: async (parent: any) => await getComments(parent.id),
     },
+    // status
     Status: {
         comments: async (parent: any) => await getComments(parent.id),
     }

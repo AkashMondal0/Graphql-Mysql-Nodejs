@@ -68,6 +68,8 @@ const register = async (data: {
                 id: GID,
                 createdDate: new Date().toISOString(),
                 updatedDate: new Date().toISOString(),
+                followers: [],
+                following: [],
             })
             const token = jwt.sign({ id: GID }, secret)
             return token
