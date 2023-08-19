@@ -25,6 +25,7 @@ const createUserStatus = async (data: { caption: string, image: string, authorId
             caption: data.caption,
             image: data.image,
             authorId: data.authorId,
+            createdDate: new Date().toISOString(),
             statusSeen: []
         })
         return "Status created"

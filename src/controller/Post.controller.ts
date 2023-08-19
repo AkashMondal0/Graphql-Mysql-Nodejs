@@ -50,7 +50,9 @@ const createPost = async (data: { caption: string, images: string[], authorId: s
             images: data.images,
             authorId: data.authorId,
             likes: [],
-            comments: []
+            comments: [],
+            createdDate: new Date().toISOString(),
+            updatedDate: new Date().toISOString(),
         })
 
         return "Post created"
@@ -64,7 +66,8 @@ const updatePost = async (data: { id: string, caption: string, images: string[] 
     try {
         await PostModel.update({
             caption: data.caption,
-            images: data.images
+            images: data.images,
+            updatedDate: new Date().toISOString(),
         }, {
             where: {
                 id: data.id

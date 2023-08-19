@@ -33,5 +33,13 @@ const UserModel = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: true
     },
+    createdDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    updatedDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 });
 export default UserModel;

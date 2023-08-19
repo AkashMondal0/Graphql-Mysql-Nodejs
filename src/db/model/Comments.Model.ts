@@ -24,7 +24,14 @@ const CommentModel = sequelize.define("Comment", {
         allowNull: false,
         primaryKey: true
     },
-
+    createdDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    updatedDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 });
 CommentModel.belongsTo(UserModel, { foreignKey: 'authorId' });
 export default CommentModel;

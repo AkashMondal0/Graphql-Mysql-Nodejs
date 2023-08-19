@@ -65,7 +65,9 @@ const register = async (data: {
                 email,
                 password: hashPassword,
                 avatar,
-                id: GID
+                id: GID,
+                createdDate: new Date().toISOString(),
+                updatedDate: new Date().toISOString(),
             })
             const token = jwt.sign({ id: GID }, secret)
             return token

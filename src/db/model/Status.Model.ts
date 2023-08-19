@@ -23,7 +23,11 @@ const StatusModel = sequelize.define("Status", {
     statusSeen:{
         type: DataTypes.JSON,
         allowNull: true,
-    }
+    },
+    createdDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 })
 
 StatusModel.belongsTo(UserModel, { foreignKey: 'authorId' });

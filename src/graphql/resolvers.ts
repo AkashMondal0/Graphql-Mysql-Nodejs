@@ -6,10 +6,11 @@ import { CreateAndAddMessage, DeleteConversation, DeleteMessage, UpdateConversat
 import { createPost, deletePost, getAllPosts, getPostById, getPostsByAuthorId, likeAndDisLikePost, updatePost } from "../controller/Post.controller";
 import { createUserStatus, deleteUserStatus, getUserAllStatus, updateSeenStatus } from "../controller/Status.controller";
 import { deleteUser, getUserById, getUserByNameAndEmail, getUserByToken, getUsers, login, register, updateUser } from "../controller/User.controller";
-import { MessagesType } from "../interface/MessageTypes";
+import { MessageType } from "../interface/MessageTypes";
 import { PostType } from "../interface/Post";
 import { createConversationType } from "../interface/User";
 import pubsub from "./pubsub";
+import { MessageCreate } from "../controller/subscriptions/Message.subscription";
 
 const resolvers = {
     Query: {
@@ -41,7 +42,7 @@ const resolvers = {
         conversationsRemoveUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await removeUserFromConversation(data),
         conversationsAddUsers: async (_: any, data: { conversationId: string, usersId: string[] }) => await addUserToConversation(data),
         conversationsMessageDelete: async (_: any, data: { conversationId: string, messageId: string[] }) => await DeleteMessage(data.conversationId, data.messageId),
-        conversationsMessageAdd: async (_: any, data: MessagesType) => await CreateAndAddMessage(data),
+        // conversationsMessageAdd: async (_: any, data: MessagesType) => await CreateAndAddMessage(data), // TODO: add message to conversation
 
         //! post mutations
         postCreate: async (_: any, data: { caption: string, images: string[], authorId: string }) => await createPost(data),
@@ -68,35 +69,18 @@ const resolvers = {
             data.content
         ),
         //! comment
-        commentLikeAndDisLike: async (_: any, data: { commentId: string, authorId: string }) => await CommentLikeAndDislike(data.commentId, data.authorId), 
+        commentLikeAndDisLike: async (_: any, data: { commentId: string, authorId: string }) => await CommentLikeAndDislike(data.commentId, data.authorId),
         //! chat
-        sendMessage: (_: any, { text, senderId, receiverId, replyId ,roomId}: any) => {
-            const message = {
-                id: uuid4(),
-                text,
-                senderId,
-                receiverId,
-                images: [],
-                replyId:"",
-                roomId,
-                createdAt: new Date().toISOString(),
-            };
-
-            // messages.push(message); // save message to database message array
-            pubsub.publish('MESSAGE_SENT', { LiveChatRoom: message });
-            return message;
-        },
+        sendMessage: (_: any, data: MessageType) => MessageCreate(data)
     },
 
     Subscription: {
         LiveChatRoom: {
-            subscribe: (_: any, { userId }: any) => {
-                console.log('receiverId', userId)
+            subscribe: (_: any, { conversationId, authorId }: any) => {
                 return pubsub.asyncIterator('MESSAGE_SENT');
             },
         },
     },
-
     // user
     User: {
         status: async (parent: any) => await getUserAllStatus(parent.id),

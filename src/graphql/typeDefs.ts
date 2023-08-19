@@ -18,6 +18,8 @@ const typeDefs = `#graphql
     conversations: [Conversation]
     createdAt: String
     updatedAt: String
+    updatedDate:String
+    createdDate:String
   }
 
   type Follow{
@@ -36,6 +38,8 @@ const typeDefs = `#graphql
     groupData: groupData
     createdAt: String
     updatedAt: String
+    updatedDate:String
+    createdDate:String
     lastMessage: String
     lastMessageTime: String
     lastMessageAuthor: String
@@ -54,6 +58,7 @@ const typeDefs = `#graphql
     caption: String
     image: String
     createdAt: String
+    createdDate:String
     statusSeen: [String]
     comments: [Comment]
   }
@@ -63,6 +68,8 @@ const typeDefs = `#graphql
     caption: String
     createdAt: String
     updatedAt: String
+    updatedDate:String
+    createdDate:String
     author: User
     likes: [String]
     comments: [Comment]
@@ -76,21 +83,28 @@ const typeDefs = `#graphql
     likes: [String]
     createdAt: String
     updatedAt: String
+    updatedDate:String
+    createdDate:String
   }
 
   type Message {
     id: ID!
-    text: String
+    video: [String]
+    message: String
     images: [String]
     replyId: String
-    createdAt: String
     receiverId: String!
     senderId: String!
-    roomId: String!
+    conversationId: String!
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
   }
+
   type Query {
       #//! message queries
-   userMessages(userId:String!): [Message]
+   userMessages(userId:String!,conversationId:String!): [Message]
     #//! users queries
     users: [User!]!
     user(id: ID!): User!
@@ -187,17 +201,18 @@ const typeDefs = `#graphql
 
     #//! message
     sendMessage(
-      text: String!
-      images: [String]
-      replyId: String
-      senderId: String!, 
-      receiverId: String!
-      roomId: String!
+    video: [String]!
+    message: String!
+    images: [String]!
+    replyId: String!
+    receiverId: String!
+    senderId: String!
+    conversationId: String!
       ): Message
   }
   
   type Subscription {
-    LiveChatRoom(roomId: String,userId:String): Message
+    LiveChatRoom(conversationId: String,authorId:String): Message
   }`;
 
 export default typeDefs;

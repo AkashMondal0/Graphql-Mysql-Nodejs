@@ -35,6 +35,14 @@ const ConversationModel = sequelize.define("Conversation", {
         type: DataTypes.STRING,
         allowNull: true,
     },
+    createdDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    updatedDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 })
 
 

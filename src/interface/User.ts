@@ -1,4 +1,44 @@
-import { PostType } from "./Post";
+export const initialUser: User = {
+    id: "",
+    name: "",
+    email: "",
+    password: "",
+    bio: "",
+    website: "",
+    avatar: "",
+    posts: [],
+    status: [],
+    followers: [],
+    following: [],
+    conversations: [],
+    createdAt: "",
+    updatedAt: "",
+    createdDate: "",
+    updatedDate: ""
+}
+export interface PostType {
+    id: string;
+    caption: string;
+    createdAt: string;
+    updatedAt: string;
+    createdDate:string
+    updatedDate:string
+    author: User;
+    likes: string[];
+    comments: CommentType[];
+    images: string[];
+}
+
+export interface CommentType {
+    id: string;
+    authorId: string;
+    content: string;
+    likes: string[];
+    createdAt: string;
+    updatedAt: string;
+    createdDate:string
+    updatedDate:string
+}
 
 export interface User {
     id: string;
@@ -8,60 +48,83 @@ export interface User {
     bio: string;
     website: string;
     avatar: string;
-    createdAt: string;
-    updatedAt: string;
     posts: PostType[];
-    // status: Status[];
+    status: StatusType[];
     followers: User[];
     following: User[];
-    requests: Requests[];
     conversations: ConversationType[];
-}
-export type requestsTypes = "followers" | "following" | "friendRequests" | "conversations";
-export type requestType = "SENDER" | "RECEIVER"
-export interface Requests {
-    id: string;
-    user: User;
-    type: requestsTypes;
     createdAt: string;
     updatedAt: string;
-    requestType: requestType;
+    createdDate:string
+    updatedDate:string
+    
 }
-
 export interface ConversationType {
     id: string;
-    usersId: string;
-    messageData: Message[];
+    usersId: string[];
+    messageData: MessageType[];
+    isGroup: boolean;
+    groupData: groupData;
     createdAt: string;
     updatedAt: string;
-    updateDate: string;
-    isGroup: boolean;
-   
-    lastMessage: string
-    lastMessageTime: string
-    lastMessageAuthor: string
+    createdDate:string
+    updatedDate:string
+    lastMessage: string;
+    lastMessageTime: string;
+    lastMessageAuthor: string;
+    friendData?:User | null
 }
-
 
 export interface groupData {
     name: string;
     avatar: string;
     description: string;
-    members: User[];
-    admins: User[];
-    owner: User;
-    requests: Requests[];
+    admins: string[];
+    CreatedUser: string;
 }
 
-export interface Message {
+export interface MessageType {
     id: string;
-    text: string;
+    video: string[];
+    message: string;
     images: string[];
-    replyTo: Message;
+    replyId: string;
+    receiverId: string;
+    senderId: string;
+    conversationId: string;
     createdAt: string;
     updatedAt: string;
-    updateDate: string;
-    user: User;
+    createdDate:string
+    updatedDate:string
+}
+export const ConversationInitialState: ConversationType = {
+    id: "",
+    usersId: [],
+    messageData: [],
+    isGroup: false,
+    groupData: {
+        name: "",
+        avatar: "",
+        description: "",
+        admins: [],
+        CreatedUser: ""
+    },
+    createdAt: "",
+    updatedAt: "",
+    lastMessage: "",
+    lastMessageTime: "",
+    lastMessageAuthor: "",
+    createdDate: "",
+    updatedDate: ""
+}
+export interface StatusType {    
+    id: string;
+    caption: string;
+    image: string;
+    createdAt: string;
+    statusSeen: string[];
+    comments: Comment[];
+    createdDate:string
 }
 
 export interface createConversationType {

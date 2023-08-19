@@ -25,6 +25,14 @@ const PostModel = sequelize.define("Post", {
         type: DataTypes.JSON,
         allowNull: true,
     },
+    createdDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    updatedDate:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
 });
 
 PostModel.belongsTo(UserModel, { foreignKey: 'authorId' });

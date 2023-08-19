@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import uuid4 from "uuid4"
 import sequelize from "../db/db"
-import { MessagesType } from "../interface/MessageTypes"
 import ConversationModel from "../db/model/Conversation.Model"
 
 
@@ -64,6 +63,8 @@ const createConversation = async (data: {
                     CreatedUser: users[0]
                 },
                 usersId: users,
+                createdDate: new Date().toISOString(),
+                updatedDate: new Date().toISOString(),
             })
         }
 
@@ -103,6 +104,7 @@ const UpdateConversation = async (data: {
                 name: name,
                 avatar: avatar,
                 description: description,
+                updatedDate: new Date().toISOString(),
             }
         }, {
             where: {
@@ -205,8 +207,8 @@ const removeUserFromConversation = async (data:
     }
 }
 
-/// Message -----------------------------
-const CreateAndAddMessage = async (data: MessagesType) => {
+/// Message ----------------------------- 
+const CreateAndAddMessage = async (data: any) => { // TODO: add type
 
     try {
         const newMessage = { ...data, id: uuid4() }

@@ -21,6 +21,8 @@ const createComment = async (postId: string, authorId: string, content: string) 
             postId,
             authorId,
             likes: [],
+            createdDate: new Date().toISOString(),
+            updatedDate: new Date().toISOString(),
         })
         return "Comment added"
     } catch (error) {
