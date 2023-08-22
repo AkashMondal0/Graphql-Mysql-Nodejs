@@ -3,6 +3,7 @@
 import uuid4 from "uuid4"
 import sequelize from "../db/db"
 import ConversationModel from "../db/model/Conversation.Model"
+import { MessageType } from "../interface/MessageTypes"
 
 
 /// conversation --------------------
@@ -208,16 +209,15 @@ const removeUserFromConversation = async (data:
 }
 
 /// Message ----------------------------- 
-const CreateAndAddMessage = async (data: any) => { // TODO: add type
+const CreateAndAddMessage = async (data: MessageType) => { // TODO: add type
 
     try {
-        const newMessage = { ...data, id: uuid4() }
 
         await ConversationModel.update({
-            messageData: sequelize.fn('JSON_ARRAY_APPEND', sequelize.col('messageData'), '$', JSON.stringify(newMessage)),
-            lastMessage: data.text,
+            messageData: sequelize.fn('JSON_ARRAY_APPEND', sequelize.col('messageData'), '$', JSON.stringify(data)),
+            lastMessage: data.message,
             lastMessageTime: new Date().toISOString(),
-            lastMessageAuthor: data.userId
+            lastMessageAuthor: data.senderId
         }, {
             where: {
                 id: data.conversationId

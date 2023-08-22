@@ -7,21 +7,21 @@ import UserModel from "./model/User.Model";
 
 
 const ModelSync = async () => {
-    // await UserModel.sync({ force: true }).then(() => {
-    //     console.log("User table created")
-    // });
-    // await PostModel.sync({ force: true }).then(() => {
-    //     console.log("Post table created")
-    // });
-    // await CommentModel.sync({ force: true }).then(() => {
-    //     console.log("Comment table created")
-    // })
-    // await StatusModel.sync({ force: true }).then(() => {
-    //     console.log("Image table created")
-    // })
-    // await ConversationModel.sync({ force: true }).then(() => {
-    //     console.log("Conversation table created")
-    // })
+    await UserModel.sync().then(() => {
+        console.log("User table created")
+    });
+    await PostModel.sync().then(() => {
+        console.log("Post table created")
+    });
+    await CommentModel.sync().then(() => {
+        console.log("Comment table created")
+    })
+    await StatusModel.sync().then(() => {
+        console.log("Image table created")
+    })
+    await ConversationModel.sync().then(() => {
+        console.log("Conversation table created")
+    })
     console.log("All tables synced")
 }
 

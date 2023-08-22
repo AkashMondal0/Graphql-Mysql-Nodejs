@@ -1,6 +1,7 @@
 import uuid4 from "uuid4";
 import { MessageType } from "../../interface/MessageTypes";
 import pubsub from "../../graphql/pubsub";
+import { CreateAndAddMessage } from "../Conversation.controller";
 
 const MessageCreate = (data: MessageType) => {
     const newMessage: MessageType = {
@@ -15,8 +16,11 @@ const MessageCreate = (data: MessageType) => {
         images: data.images,
         replyId: data.replyId,
         updatedAt: new Date().toISOString(),
+        createdDate: new Date().toISOString(),
+        updatedDate: new Date().toISOString(),
     }
     // console.log(newMessage)
+    CreateAndAddMessage(newMessage);
     pubsub.publish('MESSAGE_SENT', { LiveChatRoom: newMessage });
     return newMessage;
 }

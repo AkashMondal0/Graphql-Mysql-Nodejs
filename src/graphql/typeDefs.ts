@@ -70,7 +70,7 @@ const typeDefs = `#graphql
     updatedAt: String
     updatedDate:String
     createdDate:String
-    author: User
+    authorId: String
     likes: [String]
     comments: [Comment]
     images: [String]

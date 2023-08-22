@@ -9,4 +9,6 @@ export interface MessageType {
     senderId: string;
     conversationId: string;
     updatedAt: string;
+    createdDate: string;
+    updatedDate: string;
 }

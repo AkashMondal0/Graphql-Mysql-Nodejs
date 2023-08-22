@@ -92,7 +92,7 @@ const resolvers = {
     },
     // post 
     Post: {
-        author: async (parent: any) => await getUserById(parent.authorId),
+        // author: async (parent: any) => await getUserById(parent.authorId),
         comments: async (parent: any) => await getComments(parent.id),
     },
     // status
