@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db';
 
-const User = sequelize.define("user", {
+const UserModel = sequelize.define("user", {
     name: {
         type: DataTypes.STRING,
         allowNull: false
@@ -33,29 +33,21 @@ const User = sequelize.define("user", {
         type: DataTypes.STRING,
         allowNull: true
     },
+    createdDate: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    updatedDate: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    following: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    followers: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
 });
-
-const Follow = sequelize.define("follow", {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    followerId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        field: 'followerId',
-    },
-    followingId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        field: 'followingId',
-    },
-})
-// Define the foreign key relationships
-Follow.belongsTo(User, { foreignKey: 'followerId' });
-Follow.belongsTo(User, { foreignKey: 'followingId' });
-export {
-    User,
-    Follow
-};
+export default UserModel;

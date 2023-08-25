@@ -16,16 +16,18 @@ const typeDefs = `#graphql
     followers: [User]
     following: [User]
     conversations: [Conversation]
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
   }
 
   type Follow{
     id: ID!
     followerId: String!
     followingId: String!
-    createAt: String
-    updateAt: String
+    createdAt: String
+    updatedAt: String
   } 
 
   type Conversation{
@@ -33,15 +35,17 @@ const typeDefs = `#graphql
     usersId: [String]
     messageData: [Message]
     isGroup: Boolean
-    GroupData: GroupData
-    createAt: String
-    updateAt: String
+    groupData: groupData
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
     lastMessage: String
     lastMessageTime: String
     lastMessageAuthor: String
   }
 
-  type GroupData{
+  type groupData{
     name: String
     avatar: String
     description: String
@@ -49,92 +53,90 @@ const typeDefs = `#graphql
     CreatedUser: String
   }
 
-  type Message {
-    id: ID!
-    text: String
-    images: [String]
-    replyTo: Message
-    replyId: String
-    createAt: String
-    updateAt: String
-    userId: String
-  }
-
   type Status{
     id: ID!
     caption: String
     image: String
-    createAt: String
-    seenUsers: [User]
+    createdAt: String
+    createdDate:String
+    statusSeen: [String]
     comments: [Comment]
   }
 
   type Post{
     id: ID!
     caption: String
-    createAt: String
-    updateAt: String
-    author: User
-    likes: [Like]
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
+    authorId: String
+    likes: [String]
     comments: [Comment]
     images: [String]
   }
 
-  type Like{
-    id: ID!
-    User: User
-    Post: Post
-    reaction: String
-  }
-
   type Comment{
     id: ID!
-    User: User
+    authorId: String
     content: String
-    createAt: String
-    updateAt: String
+    likes: [String]
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
+  }
+
+  type Message {
+    id: ID!
+    video: [String]
+    message: String
+    images: [String]
+    replyId: String
+    receiverId: String!
+    senderId: String!
+    conversationId: String!
+    createdAt: String
+    updatedAt: String
+    updatedDate:String
+    createdDate:String
   }
 
   type Query {
-
-    # users queries
+      #//! message queries
+   userMessages(userId:String!,conversationId:String!): [Message]
+    #//! users queries
     users: [User!]!
     user(id: ID!): User!
     name(name: String!): User!
     userByNameAndEmail(Text: String!): [User]
-    userByToken(token: String!): User!
+    userLoginByToken(token: String!): User!
     getUserFollowers(id: String!): [Follow]
     getUserFollowing(id: String!): [Follow]
     userLogin(email: String! password: String!): String
 
-    # conversation queries
+    #//! conversation queries
     conversations: [Conversation!]!
     conversation(userId: String!):[Conversation!]!
 
-    # post queries
+    #//! post queries
     posts: [Post!]!
-    post(id: ID!): Post!
-    postByAuthorId(authorId: String!): [Post]
-    likeByPostId(postId: String!): [Like]
+    postById(id: ID!): Post!
 
-    # status queries
+    #//! status queries
     status: [Status!]!
+
   }
-  
-  
 
-
-  # mutations
+  #//? mutations
   type Mutation {
-
-    # authentication   
+    #//! authentication   
     userRegister(
       email: String!
       name: String!
       password: String!
       avatar: String
     ): String
-    follow(authorId:String!, followUserId:String!): String!
     userUpdate(id: ID! 
     name:String
     email:String
@@ -145,29 +147,34 @@ const typeDefs = `#graphql
     ): String!
     userDelete(id: ID!): String!
 
-    # conversation
+    # //! follow and unFollow
+    userFollowAndUnFollow(authorId:String!, followUserId:String!): String!
+
+    #//! conversation
     conversationsCreate(users: [String!]!,
     isGroup:String!,name: String,
     avatar: String,description: String): String!
-    conversationsMessageDataUpdate(
+    conversationsUpdate(conversationId: String!
+      name: String!,avatar: String!,description: String!
+    ): String!
+    conversationsDelete(conversationId: String!): String!
+
+    #//! conversation message
+    conversationsMessageAdd(
       conversationId: String!,
       text: String!
       images: [String]!
       replyId: String!
       userId: String!
        ): String!
-    conversationsMessageDataDelete(
+    conversationsMessageDelete(
       conversationId: String!,
       messageId: [String!]!
     ): String!
     conversationsAddUsers(conversationId: String!, usersId: [String!]!): String!
     conversationsRemoveUsers(conversationId: String!, usersId: [String!]!): String!
-    conversationsUpdate(conversationId: String!
-      name: String!,avatar: String!,description: String!
-    ): String!
-    conversationsDelete(conversationId: String!): String!
 
-    # post
+    #//! post
     postCreate(
       caption: String!
       images: [String]!
@@ -175,15 +182,16 @@ const typeDefs = `#graphql
     ): String!
     postUpdate(
       id: ID!
-      caption: String
-      images: [String]
+      caption: String!
     ): String!
     postDelete(id: ID!): String!
-    createLikeAndDisLike(postId: String!, authorId: String!): String!
-    createComment(postId: String!, authorId: String!, content: String!): String!
-
+    postLikeAndDisLike(postId: String!, authorId: String!): String!
+    postCommentCreate(postId: String!, authorId: String!, content: String!): String!
+    postCommentDelete(commentId: String!): String!
+    postCommentUpdate(commentId: String!, content: String!): String!
+    commentLikeAndDisLike(commentId: String!, authorId: String!): String!
     
-    # status
+    #//! status
     statusCreate(
       caption: String!
       image: String!
@@ -192,6 +200,21 @@ const typeDefs = `#graphql
     statusSeenUpdate(statusId: String!, userId: String!): String!
     statusDelete(id: ID!): String!
     statusCreateComment(statusId: String!, authorId: String!, content: String!): String!
+
+    #//! message
+    sendMessage(
+    video: [String]!
+    message: String!
+    images: [String]!
+    replyId: String!
+    receiverId: String!
+    senderId: String!
+    conversationId: String!
+      ): Message
+  }
+  
+  type Subscription {
+    LiveChatRoom(conversationId: String,authorId:String): Message
   }`;
 
 export default typeDefs;

@@ -1,8 +1,8 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../db';
-import { User } from './User';
+import UserModel from './User.Model';
 
-const Status = sequelize.define("Status", {
+const StatusModel = sequelize.define("Status", {
     caption: {
         type: DataTypes.STRING,
         allowNull: false
@@ -15,24 +15,20 @@ const Status = sequelize.define("Status", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-})
-
-const StatusSeen = sequelize.define("StatusSeen", {
-    userId: {
+    id:{
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        primaryKey: true
     },
-    statusId: {
+    statusSeen:{
+        type: DataTypes.JSON,
+        allowNull: true,
+    },
+    createdDate:{
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
 })
 
-Status.belongsTo(User, { foreignKey: 'authorId' });
-Status.hasMany(User, { foreignKey: 'id' });
-
-export {
-    Status,
-    StatusSeen
-};
+StatusModel.belongsTo(UserModel, { foreignKey: 'authorId' });
+export default StatusModel;
