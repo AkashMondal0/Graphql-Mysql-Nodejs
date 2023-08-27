@@ -4,7 +4,9 @@ import pubsub from "../../graphql/pubsub";
 import { CreateAndAddMessage } from "../Conversation.controller";
 
 const MessageCreate = (data: MessageType) => {
+
     const newMessage: MessageType = {
+        isMessage: true,
         id: uuid4(),
         createdAt: new Date().toISOString(),
         message: data.message,
@@ -20,7 +22,11 @@ const MessageCreate = (data: MessageType) => {
         updatedDate: new Date().toISOString(),
     }
     // console.log(newMessage)
-    CreateAndAddMessage(newMessage);
+    if (data.isMessage === "true") {
+        CreateAndAddMessage(newMessage);
+        console.log(newMessage.isMessage)
+    }
+    console.log("this is not saved in database")
     pubsub.publish('MESSAGE_SENT', { LiveChatRoom: newMessage });
     return newMessage;
 }

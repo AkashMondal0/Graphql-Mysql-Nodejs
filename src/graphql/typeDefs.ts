@@ -100,6 +100,7 @@ const typeDefs = `#graphql
     updatedAt: String
     updatedDate:String
     createdDate:String
+    isMessage:String
   }
 
   type Query {
@@ -210,6 +211,7 @@ const typeDefs = `#graphql
     receiverId: String!
     senderId: String!
     conversationId: String!
+    isMessage:String!
       ): Message
   }
   

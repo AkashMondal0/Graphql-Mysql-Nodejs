@@ -11,4 +11,5 @@ export interface MessageType {
     updatedAt: string;
     createdDate: string;
     updatedDate: string;
+    isMessage: string | boolean
 }
