@@ -1,6 +1,6 @@
 import uuid4 from "uuid4";
 import { MessageType } from "../../interface/MessageTypes";
-import pubsub from "../../graphql/pubsub";
+// import pubsub from "../../graphql/pubsub";
 import { CreateAndAddMessage } from "../Conversation.controller";
 
 const MessageCreate = (data: MessageType) => {
@@ -27,7 +27,7 @@ const MessageCreate = (data: MessageType) => {
         console.log(newMessage.isMessage)
     }
     console.log("this is not saved in database")
-    pubsub.publish('MESSAGE_SENT', { LiveChatRoom: newMessage });
+    // pubsub.publish('MESSAGE_SENT', { LiveChatRoom: newMessage });
     return newMessage;
 }
 
